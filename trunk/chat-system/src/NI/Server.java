@@ -7,6 +7,8 @@ package NI;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import signals.*;
+import chat.system.*;
 
 /**
  *
@@ -15,14 +17,16 @@ import java.net.InetAddress;
 public class Server extends Thread {
 	private DatagramSocket sock;
 	private int lengthMax;
-	public Server(DatagramSocket sock, int lengthMax){
+	private NetworkInterface nI;
+	public Server(DatagramSocket sock, int lengthMax, NetworkInterface nI){
 		this.sock = sock;
 		this.lengthMax = lengthMax;
+		this.nI = nI;
 	}
 	
 	public void run(){
 		
-		String res = "";
+		Signal res ;
 			//voir stak over flow pour les infos.
 			
 			try {
@@ -31,10 +35,15 @@ public class Server extends Thread {
 
         while(true)
         {
+					res = null;
           this.sock.receive(receivePacket);
-          res = new String( receivePacket.getData(), 0, receivePacket.getLength());
-          System.out.println("Recieved : " + res+"/// from : "+receivePacket.getAddress()); 
-        }
+          res = Signal.fromByteArray(receiveData);
+          System.out.println("Recieved : " + res.getClass()+"/// from : "+receivePacket.getAddress()); 
+					if(res.getClass().equals(Hello.class)){
+						nI.helloReceived(res);
+					}
+					
+				}
       } catch (Exception e) {
          System.out.println(e);
       }		
