@@ -6,6 +6,7 @@ package chat.system;
 
 import NI.NetworkInterface;
 import java.net.*;
+import Controler.*;
 
 /**
  *
@@ -14,6 +15,7 @@ import java.net.*;
 public class ChatSystem {
 
     private static NetworkInterface nI; 
+		private static Controle controle;
     /**
      * @param args the command line arguments
      */
@@ -21,7 +23,12 @@ public class ChatSystem {
         // TODO code application logic here
 			try{
 				nI = new NetworkInterface();
-				nI.sendUDP("lala".getBytes(), InetAddress.getByName("10.255.255.255"));
+				controle = new Controle();
+				
+				
+				nI.sendUDPSomeShit("lala".getBytes(), InetAddress.getByName("10.255.255.255"));
+				samuserAvecLeSystem();
+				
 				nI.closeSocket();
 			}catch(Exception e){
 				System.err.println("PB dans main ! "+e);
@@ -31,6 +38,11 @@ public class ChatSystem {
     }
 
 //geter et seter de NI et gui
-
+		public static void samuserAvecLeSystem(){
+			//on envoi un hello
+			
+			
+			
+		}
 
 }
