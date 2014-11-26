@@ -16,6 +16,7 @@ public class ChatSystem {
 
     private static NetworkInterface nI; 
 		private static Controle controle;
+		
     /**
      * @param args the command line arguments
      */
@@ -23,22 +24,38 @@ public class ChatSystem {
         // TODO code application logic here
 			try{
 				nI = new NetworkInterface();
-				controle = new Controle();
+				controle = new Controle(nI);
+				nI.setControler(controle);
+				
+				//nI.sendUDPSomeShit("lala".getBytes(), InetAddress.getByName("10.1.5.49"));
 				
 				
-				nI.sendUDPSomeShit("lala".getBytes(), InetAddress.getByName("10.255.255.255"));
+				
 				samuserAvecLeSystem();
+				
+				controle.connect("les BG");
+				
+				
+				
+				
+				Thread.sleep(1000);
+				
 				
 				nI.closeSocket();
 			}catch(Exception e){
 				System.err.println("PB dans main ! "+e);
+				nI.closeSocket();
 			}
         
         
     }
+		
+		public Controle getControler(){
+			return this.controle;
+		}
 
 //geter et seter de NI et gui
-		public static void samuserAvecLeSystem(){
+		public static void samuserAvecLeSystem() {
 			//on envoi un hello
 			
 			
