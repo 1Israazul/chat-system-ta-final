@@ -21,7 +21,7 @@ public class Sender {
 		sendPacket = new DatagramPacket(message, message.length,addr, port);
     try{
 		  this.sock.send(sendPacket);
-		  System.out.println("Message envoyé à "+addr);
+		  System.out.println("****Message envoyé à "+addr);
 		}catch(Exception e){
 		  System.err.println("le message n'est pas passé : "+e);
 		}

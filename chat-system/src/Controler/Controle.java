@@ -5,7 +5,7 @@
 package Controler;
 import signals.*;
 import chat.system.*;
-import java.net.*;
+import Model.*;
 
 import NI.NetworkInterface;
 
@@ -16,16 +16,20 @@ import NI.NetworkInterface;
 public class Controle {
 	private NetworkInterface nI;
 	private ChatSystem cS;
+	private RemoteUsers others;
+	private Me me;
 	
-	public Controle (NetworkInterface nI){
+	public Controle (NetworkInterface nI, RemoteUsers o){
 		this.nI = nI;
 		this.cS = cS;
+		this.others = o;
 		
 	}
 	
 	public void connect(String userName){
 		if (checkUserName(userName)){
-			this.nI.sendHello(new Hello(userName));
+			this.me = new Me(userName);
+			this.nI.sendHello(me.getUserName());
 		}
 	}
 	
@@ -36,12 +40,30 @@ public class Controle {
 	
 	public void helloReceived(Signal hy){
 		String userName = ((Hello) hy).getUsername();
-		System.out.println(userName);
+		String tmp []= userName.split("@");
+		others.addRemoteUser(userName,tmp[1]);
+		System.out.println("**** "+userName+" is added to the list of users at the adresse "+tmp[1]);
 		try{
-			nI.sendHelloOK(new HelloOK("Nous"), InetAddress.getByName("10.1.5.49"));
+			nI.sendHelloOK(me.getUserName(),others.getRemoteUserAdress(userName));
 		}catch (Exception e){
 			System.err.println(e);
 		}
 		
-	} 
+	}
+	
+	public void helloOKReceived(Signal hy){
+		String userName = ((HelloOK) hy).getUsername();		
+		String tmp []= userName.split("@");
+		others.addRemoteUser(userName,tmp[1]);
+		System.out.println("**** "+userName+" is added to the list of users at the adresse "+tmp[1]);
+	}
+	
+	public void sendMessage(String message, String remoteUser){
+		String remoteAddr = others.getRemoteUserAdress(remoteUser);
+		
+		nI.sendTextMessage(message, remoteAddr, null);
+		
+	}
+	
+	
 }

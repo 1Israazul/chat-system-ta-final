@@ -25,11 +25,12 @@ public class NetworkInterface{
 		private Server serve;
 		private Sender send;
 		private Controle c;
+		private InetAddress myAddr;
     
     public NetworkInterface (){
 			try{
 				sock = new DatagramSocket(port, InetAddress.getLocalHost());
-
+				myAddr = InetAddress.getLocalHost();
 			}catch (Exception e){
 				System.out.println("Network interface (creating the socket) : "+e);
 			}
@@ -66,31 +67,53 @@ public class NetworkInterface{
 			 
 		}
 		
-		public void sendHello(Hello h){
+		public void sendHello(String uN){
 			try{
-				InetAddress addr =  InetAddress.getByName("10.1.5.49");
+				uN = uN.concat("@").concat(myAddr.toString()); //Attention !!! l'adresse peu ne pas être bonne !
+				Hello h = new Hello(uN);
 				byte[] mess = signals.Signal.toByteArray(h);
-				send.send(mess, addr, port);
+				InetAddress addrBroacats = InetAddress.getByName("10.1.5.20");
+				send.send(mess, addrBroacats, port); //changer !!!!! metre en broadcast!
+				
 			}catch (Exception e){
 				System.err.println("Le message Hello n'est pas parti : "+e);
 			}
 			
 		}
-		public void sendHelloOK(HelloOK h, InetAddress addr){
+		public void sendHelloOK(String uN, String remoteAddr){
 				try{
+				uN = uN.concat("@").concat(this.myAddr.toString());
+				HelloOK h = new HelloOK(uN);
+				
 				byte[] mess = signals.Signal.toByteArray(h);
-				send.send(mess, addr, port);
+					//System.out.println("sendHelloOk --- remote addr "+remoteAddr);
+					remoteAddr = "10.1.5.20";// metre la bonne adress
+					send.send(mess,InetAddress.getByName(remoteAddr) , port); //ne trouve pas l'adresse...
 			}catch (Exception e){
-				System.err.println("Le message Hello n'est pas parti : "+e);
+				System.err.println("Le message HelloOK n'est pas parti : "+e);
 			}			
 		}
-		
+		public void sendTextMessage(String message, String me,String to){
+			TextMessage tMess = new TextMessage(message, me, null);
+			String remoteAddr = to;
+			try {
+				byte[] mess = signals.Signal.toByteArray(tMess);
+				send.send(mess,InetAddress.getByName(remoteAddr) , port);
+			}catch (Exception e){
+				System.err.println("Le TextMessage n'est pas parti : "+e);
+			}	
+			
+		}
 		
 		
 		
     public void helloReceived(Signal res){
 			c.helloReceived(res);
 		}
+		public void helloOKReceived(Signal res){
+			c.helloOKReceived(res);
+		}
+		
 		
     
 }
