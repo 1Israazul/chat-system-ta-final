@@ -12,7 +12,7 @@ import NI.*;
 public class Test {
 	
 	public static void main(String[] args){
-		NetworkInterface nI = new NetworkInterface();
+		MyNetworkInterface nI = new MyNetworkInterface();
 		
 		
 		

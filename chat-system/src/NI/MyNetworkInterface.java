@@ -1,8 +1,6 @@
 package NI;
 
 import signals.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.*;
 import java.util.*;
 import Controler.Controle;
@@ -18,19 +16,21 @@ import Controler.Controle;
  *
  * @author bardey
  */
-public class NetworkInterface{
+public class MyNetworkInterface{
     private int port = 4444;
     private DatagramSocket sock;
 		private int lengthOfdataRcv =250;
 		private Server serve;
 		private Sender send;
 		private Controle c;
-		private InetAddress myAddr;
+		private InetAddress myAddr ;
+		private InetAddress broadCast;
     
-    public NetworkInterface (){
+    public MyNetworkInterface (){
 			try{
 				sock = new DatagramSocket(port, InetAddress.getLocalHost());
-				myAddr = InetAddress.getLocalHost();
+				myAddr = InetAddress.getByName("10.5.1.19");
+				broadCast =  InetAddress.getByName("10.1.255.255");
 			}catch (Exception e){
 				System.out.println("Network interface (creating the socket) : "+e);
 			}
@@ -69,11 +69,11 @@ public class NetworkInterface{
 		
 		public void sendHello(String uN){
 			try{
-				uN = uN.concat("@").concat(myAddr.toString()); //Attention !!! l'adresse peu ne pas être bonne !
+				uN = uN.concat("@").concat(myAddr.toString().substring(1)); //Attention !!! l'adresse peu ne pas être bonne ! substring enlève le slach
 				Hello h = new Hello(uN);
 				byte[] mess = signals.Signal.toByteArray(h);
-				InetAddress addrBroacats = InetAddress.getByName("10.1.5.20");
-				send.send(mess, addrBroacats, port); //changer !!!!! metre en broadcast!
+				
+				send.send(mess, broadCast, port); //changer !!!!! metre en broadcast!
 				
 			}catch (Exception e){
 				System.err.println("Le message Hello n'est pas parti : "+e);
@@ -82,12 +82,12 @@ public class NetworkInterface{
 		}
 		public void sendHelloOK(String uN, String remoteAddr){
 				try{
-				uN = uN.concat("@").concat(this.myAddr.toString());
+				uN = uN.concat("@").concat(this.myAddr.toString().substring(1));
 				HelloOK h = new HelloOK(uN);
 				
 				byte[] mess = signals.Signal.toByteArray(h);
 					//System.out.println("sendHelloOk --- remote addr "+remoteAddr);
-					remoteAddr = "10.1.5.20";// metre la bonne adress
+					// metre la bonne adress
 					send.send(mess,InetAddress.getByName(remoteAddr) , port); //ne trouve pas l'adresse...
 			}catch (Exception e){
 				System.err.println("Le message HelloOK n'est pas parti : "+e);
@@ -104,6 +104,16 @@ public class NetworkInterface{
 			}	
 			
 		}
+		public void sendBy(String me){
+			Goodbye bye = new Goodbye(me); 
+			try {
+				byte[] mess = signals.Signal.toByteArray(bye);
+				send.send(mess,broadCast, port);
+			}catch (Exception e){
+				System.err.println("Le Goodbye n'est pas parti : "+e);
+			}	
+		}
+		
 		
 		
 		
@@ -113,7 +123,33 @@ public class NetworkInterface{
 		public void helloOKReceived(Signal res){
 			c.helloOKReceived(res);
 		}
+		public void messageReceived(Signal res){
+			c.texteMessageReceived(res);
+		}
+		public void byeReceived(Signal res){
+			c.byeReceived(res);
+		}
+		
+
+		public static InetAddress getLocalIp() throws SocketException {
+        Enumeration<NetworkInterface> enumInterf = NetworkInterface.getNetworkInterfaces();
+				InetAddress res; 
+        while (enumInterf.hasMoreElements()) {
+            Enumeration<InetAddress> enumIp = enumInterf.nextElement().getInetAddresses();
+            while (enumIp.hasMoreElements()) {
+							res = enumIp.nextElement();
+                if(!res.isLoopbackAddress()) {
+                    return enumIp.nextElement();
+                }
+            }
+        }
+        return null;       
+    }
+
 		
 		
-    
+		
 }
+
+
+

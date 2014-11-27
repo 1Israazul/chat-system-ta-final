@@ -7,19 +7,19 @@ import signals.*;
 import chat.system.*;
 import Model.*;
 
-import NI.NetworkInterface;
+import NI.MyNetworkInterface;
 
 /**
  *
  * @author bardey
  */
 public class Controle {
-	private NetworkInterface nI;
+	private MyNetworkInterface nI;
 	private ChatSystem cS;
 	private RemoteUsers others;
 	private Me me;
 	
-	public Controle (NetworkInterface nI, RemoteUsers o){
+	public Controle (MyNetworkInterface nI, RemoteUsers o){
 		this.nI = nI;
 		this.cS = cS;
 		this.others = o;
@@ -50,6 +50,17 @@ public class Controle {
 		}
 		
 	}
+	public void texteMessageReceived(Signal hy){
+		String sender = ((TextMessage) hy).getFrom();
+		String message = ((TextMessage) hy).getMessage();
+		System.out.println("["+sender+"] :::: "+message);
+	} 
+	public void byeReceived(Signal bye){
+			String idiot = ((Goodbye) bye).getUsername();
+			others.killRemoteUser(idiot);		
+	}
+	
+	
 	
 	public void helloOKReceived(Signal hy){
 		String userName = ((HelloOK) hy).getUsername();		
@@ -60,10 +71,17 @@ public class Controle {
 	
 	public void sendMessage(String message, String remoteUser){
 		String remoteAddr = others.getRemoteUserAdress(remoteUser);
-		
+		System.out.println("");
 		nI.sendTextMessage(message, remoteAddr, null);
 		
 	}
+	
+	public void sendBye(){
+		nI.sendBy(me.getUserName());
+	}
+	
+	
+	
 	
 	
 }
