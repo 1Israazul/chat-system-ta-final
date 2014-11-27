@@ -17,8 +17,8 @@ import chat.system.*;
 public class Server extends Thread {
 	private DatagramSocket sock;
 	private int lengthMax;
-	private NetworkInterface nI;
-	public Server(DatagramSocket sock, int lengthMax, NetworkInterface nI){
+	private MyNetworkInterface nI;
+	public Server(DatagramSocket sock, int lengthMax, MyNetworkInterface nI){
 		this.sock = sock;
 		this.lengthMax = lengthMax;
 		this.nI = nI;
@@ -39,11 +39,14 @@ public class Server extends Thread {
           this.sock.receive(receivePacket);
           res = Signal.fromByteArray(receiveData);
           System.out.println("**** Recieved : " + res.getClass()+"/// from : "+receivePacket.getAddress()); 
-					if(res.getClass().equals(Hello.class)){
+					if(res instanceof Hello){
 						nI.helloReceived(res);
-					}
-					else if(res.getClass().equals(HelloOK.class)){
+					}else if(res instanceof HelloOK){
 						nI.helloOKReceived(res);
+					}else if (res instanceof TextMessage){
+						nI.messageReceived(res);
+					}else if (res instanceof Goodbye){
+						nI.byeReceived(res);
 					}
 					
 				}

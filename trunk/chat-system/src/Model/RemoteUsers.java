@@ -20,6 +20,7 @@ public class RemoteUsers {
 	
 	public void addRemoteUser(String uN, String addr){
 		this.others.put(uN,addr);
+		//System.out.println(this.others.toString());;
 	}
 	
 	public String getRemoteUserAdress(String Un){
@@ -28,9 +29,17 @@ public class RemoteUsers {
 	
 	public String getRemoteUserAdressRand(){
 		Random generator = new Random();
-		Object[] values = others.values().toArray();
-		String randomValue = (String) values[generator.nextInt(values.length)];
+		Object[] keys = others.keySet().toArray();
+		String randomValue = (String) keys[generator.nextInt(keys.length)];
 		return randomValue;
+	}
+	
+	public void killRemoteUser(String idiot){
+		this.others.remove(idiot);
+	}
+	
+	public String toString(){
+		return "Hasmap cotient : "+others.size();
 	}
 	
 }

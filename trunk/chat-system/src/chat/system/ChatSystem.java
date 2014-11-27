@@ -4,7 +4,7 @@
  */
 package chat.system;
 
-import NI.NetworkInterface;
+import NI.MyNetworkInterface;
 import java.net.*;
 import Controler.*;
 import Model.*;
@@ -16,7 +16,7 @@ import java.util.*;
  */
 public class ChatSystem {
 
-    private static NetworkInterface nI; 
+    private static MyNetworkInterface nI; 
 		private static Controle controle;
 		private static RemoteUsers remoteUsers;
 		
@@ -26,7 +26,7 @@ public class ChatSystem {
     public static void main(String[] args) {
         // TODO code application logic here
 			try{
-				nI = new NetworkInterface();
+				nI = new MyNetworkInterface();
 				remoteUsers = new RemoteUsers();
 				controle = new Controle(nI, remoteUsers);
 				nI.setControler(controle);
@@ -38,7 +38,7 @@ public class ChatSystem {
 				
 				
 				
-				controle.connect("les BG");
+				controle.connect("lesBG");
 				
 				
 				
@@ -48,6 +48,8 @@ public class ChatSystem {
 				
 				samuserAvecLeSystem();
 				
+				
+				controle.sendBye();
 				nI.closeSocket();
 			}catch(Exception e){
 				System.err.println("PB dans main ! "+e);
@@ -66,19 +68,22 @@ public class ChatSystem {
 			//on envoi un hello
 			boolean continuer = true;
 			
-			while (continuer){
+			
+
+			
+			 while(continuer){
 				Scanner keyboard = new Scanner(System.in);
 				System.out.println("enter an integer");
 				int myint = keyboard.nextInt();
-				
 				if (myint == 0){
 					continuer = false;
 				}else{
 					String to = remoteUsers.getRemoteUserAdressRand();
+					System.out.println(to);
 					controle.sendMessage("salut", to);
 				}
 			
-								
+				
 				
 				
 				
