@@ -38,9 +38,12 @@ public class Server extends Thread {
 					res = null;
           this.sock.receive(receivePacket);
           res = Signal.fromByteArray(receiveData);
-          System.out.println("Recieved : " + res.getClass()+"/// from : "+receivePacket.getAddress()); 
+          System.out.println("**** Recieved : " + res.getClass()+"/// from : "+receivePacket.getAddress()); 
 					if(res.getClass().equals(Hello.class)){
 						nI.helloReceived(res);
+					}
+					else if(res.getClass().equals(HelloOK.class)){
+						nI.helloOKReceived(res);
 					}
 					
 				}

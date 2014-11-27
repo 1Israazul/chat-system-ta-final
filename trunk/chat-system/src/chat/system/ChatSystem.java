@@ -7,6 +7,8 @@ package chat.system;
 import NI.NetworkInterface;
 import java.net.*;
 import Controler.*;
+import Model.*;
+import java.util.*;
 
 /**
  *
@@ -16,6 +18,7 @@ public class ChatSystem {
 
     private static NetworkInterface nI; 
 		private static Controle controle;
+		private static RemoteUsers remoteUsers;
 		
     /**
      * @param args the command line arguments
@@ -24,22 +27,26 @@ public class ChatSystem {
         // TODO code application logic here
 			try{
 				nI = new NetworkInterface();
-				controle = new Controle(nI);
+				remoteUsers = new RemoteUsers();
+				controle = new Controle(nI, remoteUsers);
 				nI.setControler(controle);
+				
 				
 				//nI.sendUDPSomeShit("lala".getBytes(), InetAddress.getByName("10.1.5.49"));
 				
 				
 				
-				samuserAvecLeSystem();
+				
 				
 				controle.connect("les BG");
 				
 				
 				
 				
-				Thread.sleep(1000);
 				
+				
+				
+				samuserAvecLeSystem();
 				
 				nI.closeSocket();
 			}catch(Exception e){
@@ -57,6 +64,25 @@ public class ChatSystem {
 //geter et seter de NI et gui
 		public static void samuserAvecLeSystem() {
 			//on envoi un hello
+			boolean continuer = true;
+			
+			while (continuer){
+				Scanner keyboard = new Scanner(System.in);
+				System.out.println("enter an integer");
+				int myint = keyboard.nextInt();
+				
+				if (myint == 0){
+					continuer = false;
+				}else{
+					String to = remoteUsers.getRemoteUserAdressRand();
+					controle.sendMessage("salut", to);
+				}
+			
+								
+				
+				
+				
+			}
 			
 			
 			
