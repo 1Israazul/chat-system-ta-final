@@ -81,6 +81,7 @@ public class ChatSystem {
 					String to = remoteUsers.getRemoteUserAdressRand();
 					System.out.println(to);
 					controle.sendMessage("salut", to);
+					System.out.println("Users in the base : "+remoteUsers.toString());;
 				}
 			
 				
