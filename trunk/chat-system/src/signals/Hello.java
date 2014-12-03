@@ -1,7 +1,5 @@
 package signals;
 
-import signals.Signal;
-
 public class Hello extends Signal {
 	private String username;
 
