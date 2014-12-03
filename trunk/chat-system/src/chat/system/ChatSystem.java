@@ -9,6 +9,7 @@ import java.net.*;
 import Controler.*;
 import Model.*;
 import java.util.*;
+import Gui.*;
 
 /**
  *
@@ -19,6 +20,8 @@ public class ChatSystem {
     private static MyNetworkInterface nI; 
 		private static Controle controle;
 		private static RemoteUsers remoteUsers;
+                private static Interface interfaceUser;
+                private static Accueil accueil;
 		
     /**
      * @param args the command line arguments
@@ -33,22 +36,19 @@ public class ChatSystem {
 				
 				
 				//nI.sendUDPSomeShit("lala".getBytes(), InetAddress.getByName("10.1.5.49"));
-				
-				
-				
-				
-				
-				controle.connect("lesBG");
-				
-				
-				
-				
-				
-				
-				
-				samuserAvecLeSystem();
-				
-				
+				//controle.connect("lesBG");
+                                
+                               accueil = new Accueil(controle);
+                               controle.setAccueil(accueil);
+                               waitForConnection();
+                               interfaceUser = new Interface(controle);
+                               controle.setInterface(interfaceUser);
+                               controle.setUsername(controle.username);
+                                
+                                samuserAvecLeSystem();
+                                
+			
+                                
 				controle.sendBye();
 				nI.closeSocket();
 			}catch(Exception e){
@@ -93,5 +93,12 @@ public class ChatSystem {
 			
 			
 		}
+                
+                public static void waitForConnection(){
+                    while(controle.getConnected() == false){
+                        System.out.println(" ");
+                    }
+                    
+                }
 
 }
