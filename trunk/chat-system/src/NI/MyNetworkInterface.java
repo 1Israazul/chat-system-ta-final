@@ -29,7 +29,7 @@ public class MyNetworkInterface{
     public MyNetworkInterface (){
 			try{
 				sock = new DatagramSocket(port, InetAddress.getLocalHost());
-				myAddr = InetAddress.getByName("10.1.5.23");
+				myAddr = InetAddress.getByName("10.1.5.106");
 				broadCast =  InetAddress.getByName("10.1.255.255");
 			}catch (Exception e){
 				System.out.println("Network interface (creating the socket) : "+e);
@@ -84,7 +84,7 @@ public class MyNetworkInterface{
 			}
 			
 		}
-		public void sendHelloOK(String uN, String remoteAddr){
+		public void sendHelloOK(String uN, InetAddress remoteAddr){
 				try{
 				uN = uN.concat("@").concat(this.myAddr.toString().substring(1));
 				HelloOK h = new HelloOK(uN);
@@ -92,17 +92,16 @@ public class MyNetworkInterface{
 				byte[] mess = signals.Signal.toByteArray(h);
 					//System.out.println("sendHelloOk --- remote addr "+remoteAddr);
 					// metre la bonne adress
-					send.send(mess,InetAddress.getByName(remoteAddr) , port); //ne trouve pas l'adresse...
+					send.send(mess,remoteAddr , port); //ne trouve pas l'adresse...
 			}catch (Exception e){
 				System.err.println("Le message HelloOK n'est pas parti : "+e);
 			}			
 		}
-		public void sendTextMessage(String message, String me,String to){
-			TextMessage tMess = new TextMessage(message, me, null);
-			String remoteAddr = to;
+		public void sendTextMessage(String message, String me ,InetAddress to){
+			TextMessage tMess = new TextMessage(message, me, null);;
 			try {
 				byte[] mess = signals.Signal.toByteArray(tMess);
-				send.send(mess,InetAddress.getByName(remoteAddr) , port);
+				send.send(mess, to , port);
 			}catch (Exception e){
 				System.err.println("Le TextMessage n'est pas parti : "+e);
 			}	
@@ -121,11 +120,12 @@ public class MyNetworkInterface{
 		
 		
 		
-    public void helloReceived(Signal res){
-			c.helloReceived(res);
+    public void helloReceived(Signal res, InetAddress from){
+			c.helloReceived(res, from);
+			
 		}
-		public void helloOKReceived(Signal res){
-			c.helloOKReceived(res);
+		public void helloOKReceived(Signal res, InetAddress from){
+			c.helloOKReceived(res,from);
 			
 		}
 		public void messageReceived(Signal res){

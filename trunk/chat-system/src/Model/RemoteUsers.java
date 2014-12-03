@@ -4,6 +4,7 @@
  */
 package Model;
 
+import java.net.InetAddress;
 import java.util.*;
 
 /**
@@ -12,18 +13,18 @@ import java.util.*;
  */
 public class RemoteUsers {
 	
-	private HashMap <String , String> others;
+	private HashMap <String , InetAddress> others;
 	
 	public RemoteUsers(){
-		others = new HashMap<String, String>();
+		others = new HashMap<String, InetAddress>();
 	}
 	
-	public void addRemoteUser(String uN, String addr){
+	public void addRemoteUser(String uN, InetAddress addr){
 		this.others.put(uN,addr);
 		//System.out.println(this.others.toString());;
 	}
 	
-	public String getRemoteUserAdress(String Un){
+	public InetAddress getRemoteUserAdress(String Un){
 		return this.others.get(Un);		
 	}
 	
