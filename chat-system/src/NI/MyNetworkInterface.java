@@ -19,7 +19,7 @@ import Controler.Controle;
 public class MyNetworkInterface{
     private int port = 4444;
     private DatagramSocket sock;
-		private int lengthOfdataRcv =250;
+		private int lengthOfdataRcv =1024;
 		private Server serve;
 		private Sender send;
 		private Controle c;
@@ -29,7 +29,7 @@ public class MyNetworkInterface{
     public MyNetworkInterface (){
 			try{
 				sock = new DatagramSocket(port, InetAddress.getLocalHost());
-				myAddr = InetAddress.getByName("10.5.1.19");
+				myAddr = InetAddress.getByName("10.1.5.23");
 				broadCast =  InetAddress.getByName("10.1.255.255");
 			}catch (Exception e){
 				System.out.println("Network interface (creating the socket) : "+e);
@@ -65,6 +65,10 @@ public class MyNetworkInterface{
 		public void sendUDPSomeShit(byte[] message, InetAddress addr){
        send.send(message, addr,port);
 			 
+		}
+		
+		public void killServe(){
+			serve.killMe();
 		}
 		
 		public void sendHello(String uN){
@@ -122,6 +126,7 @@ public class MyNetworkInterface{
 		}
 		public void helloOKReceived(Signal res){
 			c.helloOKReceived(res);
+			
 		}
 		public void messageReceived(Signal res){
 			c.texteMessageReceived(res);
