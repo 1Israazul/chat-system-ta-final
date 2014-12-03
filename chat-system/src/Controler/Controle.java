@@ -23,7 +23,7 @@ public class Controle implements ActionListener {
         private Interface i;
         private Accueil a;
         private boolean connected = false;
-        public String username;
+        //public String username;
 	
 	public Controle (MyNetworkInterface nI, RemoteUsers o){
 		this.nI = nI;
@@ -88,7 +88,7 @@ public class Controle implements ActionListener {
 		String tmp []= userName.split("@");
 		others.addRemoteUser(userName,tmp[1]);
 		System.out.println("**** "+userName+" is added to the list of users at the adresse "+tmp[1]);
-                i.getUsersTextArea().append(userName+"\n");
+                i.addRemoteUser(userName);
 	}
 	
 	public void sendMessage(String message, String remoteUser){
@@ -108,21 +108,30 @@ public class Controle implements ActionListener {
             return this.connected;
         }
         
+        
+        
+        
+        
+        ////////////////////////////////////////////////:
+        ////////////////////////////////////////////////:
+        
         public void actionPerformed(ActionEvent e){
             if(e.getSource() == a.getConnectButton()){
                 connect(a.getUsernameTextArea().getText());
-                username=a.getUsernameTextArea().getText();
+                //username=a.getUsernameTextArea().getText();
                 a.setVisible(false);
                 this.connected=true;
             }
             
             else if(e.getSource() == i.getSendButton()){
-                sendMessage(i.getMessageTextArea().getText(),i.getRemoteTextField().getText());  
+                sendMessage(i.getMessageTextArea().getText(),i.getUserSelected());  
+                System.out.println(i.getUserSelected());
             }
             
             else if (e.getSource() == i.getDisconnectButton()){
-                //se déconnecter
+                sendBye();
             }
             
         }
 }
+
