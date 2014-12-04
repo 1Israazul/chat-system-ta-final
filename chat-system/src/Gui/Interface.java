@@ -60,6 +60,7 @@ public class Interface extends javax.swing.JFrame {
 		jLabel4.setText("Conversation : ");
 
 		disconnectButton.setText("Disconnect");
+                disconnectButton.addActionListener(c);
 
 		sendButton.setText("Send");
 		sendButton.addActionListener(c);
@@ -315,6 +316,11 @@ public class Interface extends javax.swing.JFrame {
 		//System.out.println(newU);
 		this.modeList.addElement(newU);
 	}
+        
+        public void removeRemoteUser(String rU){
+            this.modeList.removeElement(rU);
+            System.out.println("user removed");
+        }
 
 	/**
 	 * @return the usersList
