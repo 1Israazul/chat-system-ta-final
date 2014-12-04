@@ -21,7 +21,7 @@ public class Sender {
 		
 		
     try{
-			//addr = InetAddress.getByName("10.1.5.23");
+			addr = InetAddress.getByName(/*"10.1.5.23"*/"192.168.127.1");
 			sendPacket = new DatagramPacket(message, message.length,addr, port);
 		  this.sock.send(sendPacket);
 		  System.out.println("****Message envoyé à "+addr);

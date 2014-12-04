@@ -29,8 +29,8 @@ public class MyNetworkInterface{
     public MyNetworkInterface (){
 			try{
 				sock = new DatagramSocket(port, InetAddress.getLocalHost());
-				myAddr = InetAddress.getByName("10.1.5.106");
-				broadCast =  InetAddress.getByName("10.1.255.255");
+				myAddr = InetAddress.getByName(/*"10.1.5.106"*/"192.168.127.52");
+				broadCast =  InetAddress.getByName(/*"10.1.255.255"*/"162.168.127.255");
 			}catch (Exception e){
 				System.out.println("Network interface (creating the socket) : "+e);
 			}
@@ -108,10 +108,12 @@ public class MyNetworkInterface{
 			
 		}
 		public void sendBy(String me){
+                        me = me.concat("@").concat(this.myAddr.toString().substring(1));
 			Goodbye bye = new Goodbye(me); 
 			try {
 				byte[] mess = signals.Signal.toByteArray(bye);
-				send.send(mess,broadCast, port);
+				send.send(mess,/*broadCast*/InetAddress.getByName("192.168.127.1"), port);
+                                System.out.println("bye envoyé");
 			}catch (Exception e){
 				System.err.println("Le Goodbye n'est pas parti : "+e);
 			}	

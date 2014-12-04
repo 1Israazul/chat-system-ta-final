@@ -92,6 +92,8 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 	public void byeReceived(Signal bye) {
 		String idiot = ((Goodbye) bye).getUsername();
 		others.killRemoteUser(idiot);
+                System.out.println("received bye from "+idiot);
+                i.removeRemoteUser(idiot);
 		
 		//enlever le mec de la liste des users connectés
 	}
@@ -136,7 +138,7 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 			
 			//System.out.println(i.getUserSelected());
 		} else if (e.getSource() == i.getDisconnectButton()) {
-			disconect();
+			disconnect();
 			// à relier sur la gui.
 			
 		}
@@ -144,7 +146,7 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 	}
 	
 	
-	private void disconect(){
+	private void disconnect(){
 		sendBye();
 		nI.killServe();
 		nI.closeSocket();
@@ -160,7 +162,7 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		disconect();
+		disconnect();
 	}
 
 	@Override
