@@ -4,6 +4,8 @@ import signals.*;
 import java.net.*;
 import java.util.*;
 import Controler.Controle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /*
@@ -29,8 +31,12 @@ public class MyNetworkInterface{
     public MyNetworkInterface (){
 			try{
 				sock = new DatagramSocket(port, InetAddress.getLocalHost());
-				myAddr = InetAddress.getByName(/*"10.1.5.106"*/"192.168.127.52");
-				broadCast =  InetAddress.getByName(/*"10.1.255.255"*/"162.168.127.255");
+                                sock.setBroadcast(true);
+                                getIpOfInterfac("wlan2");
+				//myAddr = IneAddress.getByName(/*"10.1.5.106"*/"192.168.173.1");
+                                //myAddr = getLocalIp();
+                                System.out.println("mon ip est : "+myAddr.toString());
+				//broadCast =  InetAddress.getByName(/*"10.1.255.255"*/"255.255.255.255");
 			}catch (Exception e){
 				System.out.println("Network interface (creating the socket) : "+e);
 			}
@@ -57,7 +63,11 @@ public class MyNetworkInterface{
 		}
 		
 		private void createUDPSender(){
-			send = new Sender(sock);
+        try {
+            send = new Sender(sock);
+        } catch (SocketException ex) {
+            Logger.getLogger(MyNetworkInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
 		}
 		
 		
@@ -78,6 +88,7 @@ public class MyNetworkInterface{
 				byte[] mess = signals.Signal.toByteArray(h);
 				
 				send.send(mess, broadCast, port); //changer !!!!! metre en broadcast!
+                                System.out.println("hello envoyé à ");
 				
 			}catch (Exception e){
 				System.err.println("Le message Hello n'est pas parti : "+e);
@@ -108,11 +119,11 @@ public class MyNetworkInterface{
 			
 		}
 		public void sendBy(String me){
-                        me = me.concat("@").concat(this.myAddr.toString().substring(1));
+            me = me.concat("@").concat(this.myAddr.toString().substring(1));
 			Goodbye bye = new Goodbye(me); 
 			try {
 				byte[] mess = signals.Signal.toByteArray(bye);
-				send.send(mess,/*broadCast*/InetAddress.getByName("192.168.127.1"), port);
+				send.send(mess,broadCast, port);
                                 System.out.println("bye envoyé");
 			}catch (Exception e){
 				System.err.println("Le Goodbye n'est pas parti : "+e);
@@ -138,7 +149,7 @@ public class MyNetworkInterface{
 		}
 		
 
-		public static InetAddress getLocalIp() throws SocketException {
+		/*public static InetAddress getLocalIp() throws SocketException {
         Enumeration<NetworkInterface> enumInterf = NetworkInterface.getNetworkInterfaces();
 				InetAddress res; 
         while (enumInterf.hasMoreElements()) {
@@ -151,6 +162,40 @@ public class MyNetworkInterface{
             }
         }
         return null;       
+    }*/
+                
+                 private void getIpOfInterfac(String inter) throws UnknownHostException {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+
+                System.out.println("    " + intf.getName() + " " + intf.getDisplayName());
+                if (intf.getName().equals(inter)) {
+                   /* for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                        //System.out.println("        " + enumIpAddr.nextElement().toString());
+                        InetAddress adressInterface = enumIpAddr.nextElement();
+                        if (adressInterface.getAddress().length == 4) {
+                            localIpAdress = adressInterface;
+                        }
+                    }*/
+                    for (InterfaceAddress intAddress : intf.getInterfaceAddresses()) {
+                        {
+                            if (intAddress.getAddress().getAddress().length == 4) {
+                                myAddr=intAddress.getAddress();
+                                //System.out.println(myAddr.getHostAddress());
+                                //localIpAdressString=localIpAdress.getHostAddress();
+                                broadCast=intAddress.getBroadcast();
+                                //broadcastString=broadcast.getHostAddress();
+                               // System.out.println(intAddress.getBroadcast());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            System.out.println(" (error retrieving network interface list)");
+        }
+
     }
 
 		
