@@ -6,6 +6,7 @@ import java.util.*;
 import Controler.Controle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.File;
 
 
 /*
@@ -32,7 +33,7 @@ public class MyNetworkInterface{
 			try{
 				sock = new DatagramSocket(port, InetAddress.getLocalHost());
                                 sock.setBroadcast(true);
-                                getIpOfInterfac("wlan2");
+                                getIpOfInterfac("wlan0");
 				//myAddr = IneAddress.getByName(/*"10.1.5.106"*/"192.168.173.1");
                                 //myAddr = getLocalIp();
                                 System.out.println("mon ip est : "+myAddr.toString());
@@ -84,9 +85,11 @@ public class MyNetworkInterface{
 		public void sendHello(String uN){
 			try{
 				uN = uN.concat("@").concat(myAddr.toString().substring(1)); //Attention !!! l'adresse peu ne pas être bonne ! substring enlève le slach
-				Hello h = new Hello(uN);
-				byte[] mess = signals.Signal.toByteArray(h);
-				
+				System.out.println("1");
+                                Hello h = new Hello(uN);
+				System.out.println("2");
+                                byte[] mess = signals.Signal.toByteArray(h);
+				System.out.println("3");
 				send.send(mess, broadCast, port); //changer !!!!! metre en broadcast!
                                 System.out.println("hello envoyé à ");
 				
@@ -118,6 +121,19 @@ public class MyNetworkInterface{
 			}	
 			
 		}
+                
+                public void sendFileProposal(File file, String me, InetAddress to){
+                    String fileName=file.getName();
+                    long size=file.getTotalSpace();
+                    
+                    FileProposal fp = new FileProposal(fileName,size,me,null);
+                    try{
+                        byte[] proposal = signals.Signal.toByteArray(fp);
+                        send.send(proposal,to,port);
+                    }catch(Exception e){
+                        System.err.println("File proposal pas parti : "+e);
+                    }
+                }
 		public void sendBy(String me){
             me = me.concat("@").concat(this.myAddr.toString().substring(1));
 			Goodbye bye = new Goodbye(me); 

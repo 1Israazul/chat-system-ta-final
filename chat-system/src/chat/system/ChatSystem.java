@@ -20,7 +20,7 @@ public class ChatSystem {
 	private static MyNetworkInterface nI;
 	private static Controle controle;
 	private static RemoteUsers remoteUsers;
-	private static Interface interfaceUser;
+	private static InterfaceOld interfaceUser;
 	private static Accueil accueil;
 
 	/**
@@ -41,7 +41,7 @@ public class ChatSystem {
 			accueil = new Accueil(controle);
 			controle.setAccueil(accueil);
 			//waitForConnection();
-			//interfaceUser = new Interface(controle);
+			//interfaceUser = new InterfaceOld(controle);
 			
 			
 			
