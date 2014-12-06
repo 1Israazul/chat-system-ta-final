@@ -11,7 +11,11 @@ import Gui.*;
 
 import java.awt.event.*;
 import NI.MyNetworkInterface;
+import java.awt.Desktop;
 import java.net.*;
+import java.io.File;
+import java.time.Clock;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -50,9 +54,9 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 		this.a = a;
 	}
 
-	public void setUsername(String s) {
-		i.getUsernameLabel().setText(s);
-	}
+	//public void setUsername(String s) {
+	//	i.getUsernameLabel().setText(s);
+	//}
 
 	private boolean checkUserName(String uN) {
 		return true;
@@ -112,6 +116,16 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 		i.getMessageTextArea().setText("");
 
 	}
+        
+        public void sendFile(File file, String remoteUser){
+            InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
+            nI.sendFileProposal(file, me.getUserName(), remoteAddr);
+            i.getConversationTextArea().append("Sent file transfer proposal ("+file.getName()+") to : "+remoteUser);
+        }
+        
+        public void fileProposalReceived(Signal fp){
+            
+        }
 
 	public void sendBye() {
 		nI.sendBy(me.getUserName());
@@ -120,6 +134,7 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 	public boolean getConnected() {
 		return this.connected;
 	}
+        
 
 	////////////////////////////////////////////////:
 	////////////////////////////////////////////////:
@@ -142,6 +157,22 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 			// à relier sur la gui.
 			
 		}
+                
+                else if (e.getSource() == i.getFileButton()){
+                    final JFileChooser fc = new JFileChooser();
+                    try{
+                    int returnVal = fc.showOpenDialog(i);
+
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {
+                         File file = fc.getSelectedFile();
+                         i.getConversationTextArea().append("Chose: " + file.getName() + ".\n");
+                         sendFile(file, i.getRemoteTextField().getText());
+                    }
+                }
+                    catch(Exception exc){
+                        System.err.println("Erreur lors de l'ouverture de l'explorer : "+e);
+                    }
+                }
 
 	}
 	
@@ -192,10 +223,8 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if ((e.getSource() == i.getUsersList()) && (i.getUserSelected() != null) ){
-			
+		if ((e.getSource() == i.getUsersList()) && (i.getUserSelected() != null) ){			               
 			i.setRemoteTextField(i.getUserSelected());
-			
 		}
 	}
 
