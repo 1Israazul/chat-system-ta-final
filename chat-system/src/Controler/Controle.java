@@ -14,6 +14,8 @@ import NI.MyNetworkInterface;
 import java.awt.Desktop;
 import java.net.*;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Path;
 import java.time.Clock;
 import javax.swing.JFileChooser;
 
@@ -29,7 +31,9 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 	private Me me;
 	private Interface i;
 	private Accueil a;
+        private FileTransferDialog ft;
 	private boolean connected = false;
+        private Path path;
 	//public String username;
 
 	public Controle(MyNetworkInterface nI, RemoteUsers o) {
@@ -117,15 +121,65 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 
 	}
         
-        public void sendFile(File file, String remoteUser){
+        public void sendFileProp(File file, String remoteUser){
             InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
             nI.sendFileProposal(file, me.getUserName(), remoteAddr);
             i.getConversationTextArea().append("Sent file transfer proposal ("+file.getName()+") to : "+remoteUser);
         }
         
         public void fileProposalReceived(Signal fp){
-            
+            String file = ((FileProposal) fp).getFileName();
+            String from = ((FileProposal) fp).getFrom();
+            ft = new FileTransferDialog(file,from,this);
         }
+        
+        public void sendFileOK(String file, String remoteUser){
+            //InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
+            try{
+            InetAddress remoteAddr = InetAddress.getByName("192.168.1.48");
+            nI.sendFileTransferAccepted(file, remoteAddr);
+            }catch(Exception e){
+                System.err.println(e);
+            }
+        }
+        
+        public void sendFileNOK(String file, String remoteUser){
+            //InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
+            try{
+            InetAddress remoteAddr = InetAddress.getByName("192.168.1.48");
+            nI.sendFileTransferNotAccepted(file, remoteAddr);
+            }catch(Exception e){
+                System.err.println(e);
+            }
+        }
+        
+        public void fileOKReceived(Signal s, InetAddress from){
+            try{
+               InetAddress remoteAddr = from;
+               nI.sendFileTransfer(path, remoteAddr);
+            }catch(Exception e){
+                System.err.println("pb lors du transfert : "+e);
+            }
+        }
+        
+        public void fileNOKReceived(Signal s, InetAddress from){
+            String remoteUser = others.getRemoteUserAdress(((FileTransferNotAccepted) s).getRemoteUsername()).toString();
+            String fileName = ((FileTransferNotAccepted) s).getFileName();
+            System.out.println(remoteUser+" a refusé le transfert du fichier "+fileName);
+        }
+        
+        public void fileTransferReceived(Signal s){
+            byte[] file = ((FileTransfer) s).getFile();
+            try{
+                FileOutputStream fos = new FileOutputStream("C:\\Users\\Alexandre\\Downloads\\a");
+                fos.write(file);
+                fos.close();
+            }catch(Exception e){
+                System.err.println("erreur lors du transfert du fichier : "+e);
+            }
+
+        }
+       
 
 	public void sendBye() {
 		nI.sendBy(me.getUserName());
@@ -165,14 +219,27 @@ public class Controle implements ActionListener, WindowListener,MouseListener {
 
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                          File file = fc.getSelectedFile();
+                         path = file.toPath();
                          i.getConversationTextArea().append("Chose: " + file.getName() + ".\n");
-                         sendFile(file, i.getRemoteTextField().getText());
+                         sendFileProp(file, i.getRemoteTextField().getText());
                     }
                 }
                     catch(Exception exc){
                         System.err.println("Erreur lors de l'ouverture de l'explorer : "+e);
                     }
                 }
+                
+                else if (e.getSource() == ft.getAcceptButton()){
+                    sendFileOK(ft.getFileLabel().getText(), ft.getRemoteLabel().getText());
+                    ft.setVisible(false);
+                }
+                
+                else if (e.getSource() == ft.getRefuseButton()){
+                    
+                    sendFileNOK(ft.getFileLabel().getText(), ft.getRemoteLabel().getText());
+                    ft.setVisible(false);
+                }
+                
 
 	}
 	
