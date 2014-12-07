@@ -7,6 +7,9 @@ import Controler.Controle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 /*
@@ -22,11 +25,12 @@ import java.io.File;
 public class MyNetworkInterface{
     private int port = 4444;
     private DatagramSocket sock;
-		private int lengthOfdataRcv =1024;
+		private int lengthOfdataRcv =200000000; //1024;
 		private Server serve;
 		private Sender send;
 		private Controle c;
 		private InetAddress myAddr ;
+                private InetAddress remoteFileSender;
 		private InetAddress broadCast;
     
     public MyNetworkInterface (){
@@ -124,8 +128,7 @@ public class MyNetworkInterface{
                 
                 public void sendFileProposal(File file, String me, InetAddress to){
                     String fileName=file.getName();
-                    long size=file.getTotalSpace();
-                    
+                    long size=file.getTotalSpace();                    
                     FileProposal fp = new FileProposal(fileName,size,me,null);
                     try{
                         byte[] proposal = signals.Signal.toByteArray(fp);
@@ -134,6 +137,40 @@ public class MyNetworkInterface{
                         System.err.println("File proposal pas parti : "+e);
                     }
                 }
+                
+                public void sendFileTransferAccepted(String file,InetAddress to){
+                    FileTransferAccepted ftA = new FileTransferAccepted(file,this.myAddr.toString().substring(1));
+                    try{
+                        byte[] transferAccepted = signals.Signal.toByteArray(ftA);
+                        send.send(transferAccepted,to,port);
+                    }catch (Exception e){
+                        System.err.println("erreur acceptation transfert : "+e);
+                    }                   
+                }
+                
+                public void sendFileTransferNotAccepted(String file,InetAddress to){
+                    FileTransferNotAccepted ftNA = new FileTransferNotAccepted(file,this.myAddr.toString().substring(1));
+                    try{
+                        byte[] transferNotAccepted = signals.Signal.toByteArray(ftNA);
+                        send.send(transferNotAccepted,to,port);
+                    }catch (Exception e){
+                        System.err.println("erreur refus transfert : "+e);
+                    }                   
+                }
+                
+                public void sendFileTransfer(Path path, InetAddress to){
+                    try{
+                    byte[] data = Files.readAllBytes(path);
+                    FileTransfer ft = new FileTransfer(data);
+                     byte[] fileTransfer = signals.Signal.toByteArray(ft);
+                    send.send(fileTransfer, to, port);
+                        System.out.println("file transfer envoyé");
+                    }catch(Exception e){
+                        System.err.println("le fichier n'est pas parti : "+e);
+                    }
+                    
+                }
+
 		public void sendBy(String me){
             me = me.concat("@").concat(this.myAddr.toString().substring(1));
 			Goodbye bye = new Goodbye(me); 
@@ -163,6 +200,19 @@ public class MyNetworkInterface{
 		public void byeReceived(Signal res){
 			c.byeReceived(res);
 		}
+                public void fileProposalReceived(Signal res){
+			c.fileProposalReceived(res);
+		}               
+                public void fileTransferAcceptedReceived(Signal res, InetAddress from){
+                    c.fileOKReceived(res,from);
+                }
+                public void fileTransferNotAcceptedReceived(Signal res, InetAddress from){
+                    c.fileNOKReceived(res,from);
+                }
+                public void fileTransferReceived(Signal res){
+                    System.out.println("pasage dans ni");
+                    c.fileTransferReceived(res);
+                }
 		
 
 		/*public static InetAddress getLocalIp() throws SocketException {
