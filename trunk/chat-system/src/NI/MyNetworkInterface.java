@@ -134,7 +134,7 @@ public class MyNetworkInterface {
 		FileProposal fp = new FileProposal(fileName, size, me, null);
 		try {
 			byte[] proposal = signals.Signal.toByteArray(fp);
-			send.send(proposal, to, port);
+			send.send(proposal, to, port);//UDP OK
 		} catch (Exception e) {
 			System.err.println("File proposal pas parti : " + e);
 		}
@@ -144,7 +144,7 @@ public class MyNetworkInterface {
 		FileTransferAccepted ftA = new FileTransferAccepted(file, this.myAddr.toString().substring(1));
 		try {
 			byte[] transferAccepted = signals.Signal.toByteArray(ftA);
-			send.send(transferAccepted, to, port);
+			send.send(transferAccepted, to, port); //UDP ok
 		} catch (Exception e) {
 			System.err.println("erreur acceptation transfert : " + e);
 		}
@@ -162,10 +162,10 @@ public class MyNetworkInterface {
 
 	public void sendFileTransfer(Path path, InetAddress to) {
 		try {
-			byte[] data = Files.readAllBytes(path);
+			byte[] data = Files.readAllBytes(path);//okay 
 			FileTransfer ft = new FileTransfer(data);
 			byte[] fileTransfer = signals.Signal.toByteArray(ft);
-			send.send(fileTransfer, to, port);
+			send.send(fileTransfer, to, port);//doit etre fait sur le En TCP 
 			System.out.println("file transfer envoyé");
 		} catch (Exception e) {
 			System.err.println("le fichier n'est pas parti : " + e);

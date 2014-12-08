@@ -121,12 +121,14 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 		InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 		nI.sendFileProposal(file, me.getUserName(), remoteAddr);
 		i.getConversationTextArea().append("Sent file transfer proposal (" + file.getName() + ") to : " + remoteUser);
+		//gerer des états 
 	}
 
 	public void fileProposalReceived(Signal fp) {
 		String file = ((FileProposal) fp).getFileName();
 		String from = ((FileProposal) fp).getFrom();
 		ft = new FileTransferDialog(file, from, this);
+		//et la faut dire oui
 	}
 
 	public void sendFileOK(String file, String remoteUser) {
@@ -142,8 +144,8 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	public void sendFileNOK(String file, String remoteUser) {
 		//InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 		try {
-			InetAddress remoteAddr = InetAddress.getByName("192.168.1.48");
-			nI.sendFileTransferNotAccepted(file, remoteAddr);
+			InetAddress remoteAddr = InetAddress.getByName("192.168.1.48"); 
+			nI.sendFileTransferNotAccepted(file, remoteAddr); 
 		} catch (Exception e) {
 			System.err.println(e);
 		}
@@ -152,7 +154,7 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	public void fileOKReceived(Signal s, InetAddress from) {
 		try {
 			InetAddress remoteAddr = from;
-			nI.sendFileTransfer(path, remoteAddr);
+			nI.sendFileTransfer(path, remoteAddr); //ok ! revoir la fonction
 		} catch (Exception e) {
 			System.err.println("pb lors du transfert : " + e);
 		}
@@ -167,7 +169,7 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	public void fileTransferReceived(Signal s) {
 		byte[] file = ((FileTransfer) s).getFile();
 		try {
-			FileOutputStream fos = new FileOutputStream("C:\\Users\\Alexandre\\Downloads\\a");
+			FileOutputStream fos = new FileOutputStream("C:\\Users\\Alexandre\\Downloads\\a"); //NONONONONONONONONONONONON
 			fos.write(file);
 			fos.close();
 		} catch (Exception e) {
