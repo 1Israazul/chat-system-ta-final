@@ -40,7 +40,7 @@ public class MyNetworkInterface {
 			getIpOfInterfac("eth0");
 			//sock = new DatagramSocket(port, myAddr);
 			sock = new DatagramSocket(port, InetAddress.getLocalHost());
-			//sock.setBroadcast(true);
+			sock.setBroadcast(true);
 			
 			//myAddr = IneAddress.getByName(/*"10.1.5.106"*/"192.168.173.1");
 			//myAddr = getLocalIp();
