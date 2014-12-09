@@ -4,12 +4,12 @@ import signals.*;
 import java.net.*;
 import java.util.*;
 import Controler.Controle;
+import Model.demandeFileTrans;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.*;
+
+
 
 
 /*
@@ -24,22 +24,27 @@ public class MyNetworkInterface {
 
 	private int port = 4444;
 	private DatagramSocket sock;
-	private int lengthOfdataRcv = 200000000; //1024;
+	private int lengthOfdataRcv = 1024; //1024;
 	private Server serve;
 	private Sender send;
 	private Controle c;
 	private InetAddress myAddr;
 	private InetAddress remoteFileSender;
-	private InetAddress broadCast;
+	private InetAddress broadCast ;
+	private TCPServer serv;
 
 	public MyNetworkInterface() {
 		try {
+			//myAddr = InetAddress.getLocalHost();
+			//broadCast = InetAddress.getByName("10.1.255.255");
+			getIpOfInterfac("eth0");
+			//sock = new DatagramSocket(port, myAddr);
 			sock = new DatagramSocket(port, InetAddress.getLocalHost());
-			sock.setBroadcast(true);
-			getIpOfInterfac("wlan0");
+			//sock.setBroadcast(true);
+			
 			//myAddr = IneAddress.getByName(/*"10.1.5.106"*/"192.168.173.1");
 			//myAddr = getLocalIp();
-			System.out.println("mon ip est : " + myAddr.toString());
+			//System.out.println("mon ip est : " + myAddr.toString());
 			//broadCast =  InetAddress.getByName(/*"10.1.255.255"*/"255.255.255.255");
 		} catch (Exception e) {
 			System.out.println("Network interface (creating the socket) : " + e);
@@ -89,11 +94,11 @@ public class MyNetworkInterface {
 	public void sendHello(String uN) {
 		try {
 			uN = uN.concat("@").concat(myAddr.toString().substring(1)); //Attention !!! l'adresse peu ne pas être bonne ! substring enlève le slach
-			System.out.println("1");
+			//System.out.println("1");
 			Hello h = new Hello(uN);
-			System.out.println("2");
+			//System.out.println("2");
 			byte[] mess = signals.Signal.toByteArray(h);
-			System.out.println("3");
+			//System.out.println("3");
 			send.send(mess, broadCast, port); //changer !!!!! metre en broadcast!
 			System.out.println("hello envoyé à ");
 
@@ -128,10 +133,10 @@ public class MyNetworkInterface {
 
 	}
 
-	public void sendFileProposal(File file, String me, InetAddress to) {
-		String fileName = file.getName();
-		long size = file.getTotalSpace();
-		FileProposal fp = new FileProposal(fileName, size, me, null);
+	public void sendFileProposal(demandeFileTrans demande,String me, InetAddress to) {
+		String fileName = demande.getFile().getName();
+		long size = demande.gettaille();
+		FileProposal fp = new FileProposal(fileName, size, me , null);
 		try {
 			byte[] proposal = signals.Signal.toByteArray(fp);
 			send.send(proposal, to, port);//UDP OK
@@ -160,18 +165,54 @@ public class MyNetworkInterface {
 		}
 	}
 
-	public void sendFileTransfer(Path path, InetAddress to) {
+	public void sendFileTransfer(demandeFileTrans demande, InetAddress to) {
 		try {
-			byte[] data = Files.readAllBytes(path);//okay 
-			FileTransfer ft = new FileTransfer(data);
-			byte[] fileTransfer = signals.Signal.toByteArray(ft);
-			send.send(fileTransfer, to, port);//doit etre fait sur le En TCP 
+			FileInputStream is = new FileInputStream(demande.getFile());
+			
+			byte[] data = new byte[(int)demande.gettaille()];//okay 
+			is.read(data);
+			
+			TCPSender sendTCP = new TCPSender(data, to, port);
+			
 			System.out.println("file transfer envoyé");
 		} catch (Exception e) {
 			System.err.println("le fichier n'est pas parti : " + e);
 		}
 
 	}
+	public void recieveFileTransfer(demandeFileTrans demande) {
+		
+		
+		
+		try {
+			byte[] data = new byte [(int)demande.gettaille()];
+			FileOutputStream fichier = new FileOutputStream(demande.getFile());
+			BufferedOutputStream bos = new BufferedOutputStream(fichier);
+		
+		
+		
+			serv = new TCPServer(data, port, (int)demande.gettaille());
+			
+			
+			bos.write(data);
+			bos.flush();
+			fichier.close();
+			
+			System.out.println("file transfer reçu");
+		} catch (Exception e) {
+			System.err.println("le fichier n'est pas parti : " + e);
+		}
+
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public void sendBy(String me) {
 		me = me.concat("@").concat(this.myAddr.toString().substring(1));
@@ -253,6 +294,7 @@ public class MyNetworkInterface {
 						{
 							if (intAddress.getAddress().getAddress().length == 4) {
 								myAddr = intAddress.getAddress();
+								//System.out.println(myAddr);
 								//System.out.println(myAddr.getHostAddress());
 								//localIpAdressString=localIpAdress.getHostAddress();
 								broadCast = intAddress.getBroadcast();

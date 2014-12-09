@@ -14,8 +14,8 @@ import NI.MyNetworkInterface;
 import java.net.*;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.nio.file.Path;
 import javax.swing.JFileChooser;
+
 
 /**
  *
@@ -31,7 +31,10 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	private Accueil a;
 	private FileTransferDialog ft;
 	private boolean connected = false;
-	private Path path;
+	private demandeFileTrans demandeFile;
+	
+	
+	
 	//public String username;
 
 	public Controle(MyNetworkInterface nI, RemoteUsers o) {
@@ -117,10 +120,10 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 
 	}
 
-	public void sendFileProp(File file, String remoteUser) {
-		InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
-		nI.sendFileProposal(file, me.getUserName(), remoteAddr);
-		i.getConversationTextArea().append("Sent file transfer proposal (" + file.getName() + ") to : " + remoteUser);
+	public void sendFileProp() {
+		
+		nI.sendFileProposal(demandeFile, me.getUserName(), others.getRemoteUserAdress(demandeFile.getRemotUser()));
+		i.getConversationTextArea().append("Sent file transfer proposal (" + demandeFile.getFile() + ") to : " + demandeFile.getRemotUser());
 		//gerer des états 
 	}
 
@@ -134,7 +137,8 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	public void sendFileOK(String file, String remoteUser) {
 		//InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 		try {
-			InetAddress remoteAddr = InetAddress.getByName("192.168.1.48");
+			
+			InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 			nI.sendFileTransferAccepted(file, remoteAddr);
 		} catch (Exception e) {
 			System.err.println(e);
@@ -144,7 +148,7 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	public void sendFileNOK(String file, String remoteUser) {
 		//InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 		try {
-			InetAddress remoteAddr = InetAddress.getByName("192.168.1.48"); 
+			InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 			nI.sendFileTransferNotAccepted(file, remoteAddr); 
 		} catch (Exception e) {
 			System.err.println(e);
@@ -154,7 +158,9 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	public void fileOKReceived(Signal s, InetAddress from) {
 		try {
 			InetAddress remoteAddr = from;
-			nI.sendFileTransfer(path, remoteAddr); //ok ! revoir la fonction
+			
+			nI.sendFileTransfer(demandeFile, remoteAddr); //ok ! revoir la fonction
+		
 		} catch (Exception e) {
 			System.err.println("pb lors du transfert : " + e);
 		}
@@ -204,6 +210,7 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 			//System.out.println(i.getUserSelected());
 		} else if (e.getSource() == i.getDisconnectButton()) {
 			disconnect();
+			System.out.println("disco called (controle)");
 			// à relier sur la gui.
 
 		} else if (e.getSource() == i.getFileButton()) {
@@ -213,9 +220,14 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
-					path = file.toPath();
+					demandeFile = new demandeFileTrans();
+					demandeFile.setFile(file);
+					demandeFile.setRemotUser(i.getRemoteTextField().getText());
+					demandeFile.settaille(file.length());
+					
 					i.getConversationTextArea().append("Chose: " + file.getName() + ".\n");
-					sendFileProp(file, i.getRemoteTextField().getText());
+					
+					sendFileProp();
 				}
 			} catch (Exception exc) {
 				System.err.println("Erreur lors de l'ouverture de l'explorer : " + e);
