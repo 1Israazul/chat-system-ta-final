@@ -121,6 +121,8 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	}
 
 	public void sendFileProp() {
+		//verifier que tout est bon dans la demande.
+		
 		
 		nI.sendFileProposal(demandeFile, me.getUserName(), others.getRemoteUserAdress(demandeFile.getRemotUser()));
 		i.getConversationTextArea().append("Sent file transfer proposal (" + demandeFile.getFile() + ") to : " + demandeFile.getRemotUser());
@@ -130,12 +132,20 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	public void fileProposalReceived(Signal fp) {
 		String file = ((FileProposal) fp).getFileName();
 		String from = ((FileProposal) fp).getFrom();
+		
+		//set la demande + new si on peu
+		
 		ft = new FileTransferDialog(file, from, this);
+		
+		
+		
+		
 		//et la faut dire oui
 	}
 
 	public void sendFileOK(String file, String remoteUser) {
 		//InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
+		
 		try {
 			
 			InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
@@ -157,6 +167,9 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 
 	public void fileOKReceived(Signal s, InetAddress from) {
 		try {
+			//on peut envoyer si on a une vra demande de faite
+			
+			
 			InetAddress remoteAddr = from;
 			
 			nI.sendFileTransfer(demandeFile, remoteAddr); //ok ! revoir la fonction
@@ -167,6 +180,8 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	}
 
 	public void fileNOKReceived(Signal s, InetAddress from) {
+		//on kill la demande
+		
 		String remoteUser = others.getRemoteUserAdress(((FileTransferNotAccepted) s).getRemoteUsername()).toString();
 		String fileName = ((FileTransferNotAccepted) s).getFileName();
 		System.out.println(remoteUser + " a refusé le transfert du fichier " + fileName);
@@ -224,6 +239,7 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 					demandeFile.setFile(file);
 					demandeFile.setRemotUser(i.getRemoteTextField().getText());
 					demandeFile.settaille(file.length());
+					demandeFile.use();
 					
 					i.getConversationTextArea().append("Chose: " + file.getName() + ".\n");
 					

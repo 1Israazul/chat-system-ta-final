@@ -16,11 +16,24 @@ public class demandeFileTrans {
 	String remoteUser ;
 	File filetoSend;
 	long taille;
+	boolean isUsed;
 	
 	
 	public demandeFileTrans(){
 		
 	}
+	
+	
+	public boolean canUse(){
+		return isUsed;
+	}
+	public void use(){
+		isUsed = true;
+	}
+	public void free(){
+		isUsed = false;
+	}
+	
 	
 	
 	public String getRemotUser(){
