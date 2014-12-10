@@ -35,11 +35,10 @@ public class MyNetworkInterface {
 
 	public MyNetworkInterface() {
 		try {
-			//myAddr = InetAddress.getLocalHost();
-			//broadCast = InetAddress.getByName("10.1.255.255");
+			
 			getIpOfInterfac("eth0");
-			//sock = new DatagramSocket(port, myAddr);
-			System.out.println("Localhost : "+InetAddress.getLocalHost());
+			
+			System.out.println("Localhost : "+InetAddress.getLocalHost().getHostAddress());
 			sock = new DatagramSocket(port);
 			sock.setBroadcast(true);
 			
