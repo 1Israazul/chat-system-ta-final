@@ -19,8 +19,8 @@ public class ChatSystem {
 
 	private static MyNetworkInterface nI;
 	private static Controle controle;
+	private static Gui gui;
 	private static RemoteUsers remoteUsers;
-	private static InterfaceOld interfaceUser;
 	private static Accueil accueil;
 
 	/**
@@ -31,29 +31,14 @@ public class ChatSystem {
 		try {
 			nI = new MyNetworkInterface();
 			remoteUsers = new RemoteUsers();
-			controle = new Controle(nI, remoteUsers);
+			gui = new Gui();
+			controle = new Controle(nI, remoteUsers, gui);
+			gui.setControler(controle);
 			nI.setControler(controle);
 
 
-			//nI.sendUDPSomeShit("lala".getBytes(), InetAddress.getByName("10.1.5.49"));
-			//controle.connect("lesBG");
-
-			accueil = new Accueil(controle);
-			controle.setAccueil(accueil);
-			//waitForConnection();
-			//interfaceUser = new InterfaceOld(controle);
-			
-			
-			
-			
-			//controle.setInterface(interfaceUser);
-
-
-			//samuserAvecLeSystem();
-
-			
-
-			//controle.sendBye();
+			gui.commencer();
+		
 
 		} catch (Exception e) {
 			System.err.println("PB dans main ! " + e);

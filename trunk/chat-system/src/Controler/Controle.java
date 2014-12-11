@@ -16,69 +16,62 @@ import java.io.File;
 import java.io.FileOutputStream;
 import javax.swing.JFileChooser;
 
-
 /**
  *
  * @author bardey
  */
-public class Controle implements ActionListener, WindowListener, MouseListener {
+public class Controle  {
 
 	private MyNetworkInterface nI;
 	private ChatSystem cS;
 	private RemoteUsers others;
 	private Me me;
-	private Interface i;
-	private Accueil a;
-	private FileTransferDialog ft;
 	private boolean connected = false;
 	private demandeFileTrans demandeFile;
-	
-	
-	
-	//public String username;
+	private Gui gui;
 
-	public Controle(MyNetworkInterface nI, RemoteUsers o) {
+	//public String username;
+	public Controle(MyNetworkInterface nI, RemoteUsers o, Gui g) {
 		this.nI = nI;
 		this.cS = cS;
 		this.others = o;
+		this.gui = g;
 
 	}
 
 	public void connect(String userName) {
 		if (checkUserName(userName)) {
-			this.me = new Me(userName);
-			this.nI.sendHello(me.getUserName());
+			this.me = new Me();
+			this.me.setUserName(userName);
+			this.me.setUserNameWithIP(userName+"@"+nI.getIpString());
+			this.nI.sendHello(me.getUserNameWithIP());
 		}
 	}
 
-	public void setInterface(Interface i) {
-		this.i = i;
-	}
-
-	public void setAccueil(Accueil a) {
-		this.a = a;
-	}
-
-	//public void setUsername(String s) {
-	//	i.getUsernameLabel().setText(s);
-	//}
+	
 	private boolean checkUserName(String uN) {
 		return true;
+	}
+
+	public void disconnect() {
+		sendBye();
+		nI.killServe();
+		nI.closeSocket();
+		System.out.println("TOUT EST BIEN FINI !");
+		//To change body of generated methods, choose Tools | Templates.
 	}
 
 	private void addNewRemotUser(String userName, InetAddress from) {
 
 		others.addRemoteUser(userName, from);
 		System.out.println("**** " + userName + " is added to the list of users at the adresse " + from);
-		if (i != null) {// a t on ouver la fenètre ?
-			//Son passe ici (j'ai testé)
-			i.addRemoteUser(userName);
+		if (gui != null) {
+			gui.addRemoteUser(userName);
 		}
 	}
 
 	public void helloReceived(Signal hy, InetAddress from) {
 		String userName = ((Hello) hy).getUsername();
-		//System.out.println("helloReceived controler");
 		addNewRemotUser(userName, from);
 
 		try {
@@ -93,14 +86,14 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 		String sender = ((TextMessage) hy).getFrom();
 		String message = ((TextMessage) hy).getMessage();
 		System.out.println("[" + sender + "] :::: " + message);
-		i.getConversationTextArea().append("Received from " + sender + " : " + message + "\n");
+		gui.displayNewMessage(sender, message);
 	}
 
 	public void byeReceived(Signal bye) {
 		String idiot = ((Goodbye) bye).getUsername();
 		others.killRemoteUser(idiot);
 		System.out.println("received bye from " + idiot);
-		i.removeRemoteUser(idiot);
+		gui.removeRemoteUser(idiot);
 
 		//enlever le mec de la liste des users connectés
 	}
@@ -115,39 +108,53 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 		InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 		//System.out.println("");
 		nI.sendTextMessage(message, me.getUserName(), remoteAddr);
-		i.getConversationTextArea().append("Sent to " + i.getRemoteTextField().getText() + " : " + i.getMessageTextArea().getText() + "\n");
-		i.getMessageTextArea().setText("");
+		
+		gui.messageSent(message, remoteUser);
+		
 
 	}
 
-	public void sendFileProp() {
+	public void sendFileProp(File file, String remoteUser) {
 		//verifier que tout est bon dans la demande.
+		demandeFile = new demandeFileTrans();
+		demandeFile.setFile(file);
+		demandeFile.setRemotUser(remoteUser);
+		demandeFile.settaille(file.length());
+		demandeFile.use();
+
+		nI.sendFileProposal(demandeFile, me.getUserNameWithIP(), others.getRemoteUserAdress(demandeFile.getRemotUser()));
+		gui.filePropSent(remoteUser, file.getName());
 		
-		
-		nI.sendFileProposal(demandeFile, me.getUserName(), others.getRemoteUserAdress(demandeFile.getRemotUser()));
-		i.getConversationTextArea().append("Sent file transfer proposal (" + demandeFile.getFile() + ") to : " + demandeFile.getRemotUser());
 		//gerer des états 
 	}
 
 	public void fileProposalReceived(Signal fp) {
-		String file = ((FileProposal) fp).getFileName();
+		String nameFile = ((FileProposal) fp).getFileName();
 		String from = ((FileProposal) fp).getFrom();
+		long length = ((FileProposal) fp).getSize();
 		
+		System.out.println(from);
+
+
+		demandeFile = new demandeFileTrans();
+		demandeFile.setFileName(nameFile);
+		demandeFile.setRemotUser(from);
+		demandeFile.settaille(length);
+		demandeFile.use();
+
 		//set la demande + new si on peu
-		
-		ft = new FileTransferDialog(file, from, this);
-		
+		gui.askAuthorizationFileTransfer(nameFile, from);
 		
 		
-		
+
 		//et la faut dire oui
 	}
 
 	public void sendFileOK(String file, String remoteUser) {
 		//InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
-		
+
 		try {
-			
+
 			InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 			nI.sendFileTransferAccepted(file, remoteAddr);
 		} catch (Exception e) {
@@ -159,7 +166,7 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 		//InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 		try {
 			InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
-			nI.sendFileTransferNotAccepted(file, remoteAddr); 
+			nI.sendFileTransferNotAccepted(file ,remoteUser,remoteAddr );
 		} catch (Exception e) {
 			System.err.println(e);
 		}
@@ -168,12 +175,19 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	public void fileOKReceived(Signal s, InetAddress from) {
 		try {
 			//on peut envoyer si on a une vra demande de faite
-			
-			
-			InetAddress remoteAddr = from;
-			
-			nI.sendFileTransfer(demandeFile, remoteAddr); //ok ! revoir la fonction
-		
+
+			//debug necessaire : others.getRemoteUserAdress(demandeFile.getRemotUser()) == from
+			if (demandeFile.canUse()) {
+				System.out.println("Le Fichier a été accepté et est encours d'envoi");
+				nI.sendFileTransfer(demandeFile, from); //ok ! revoir la fonction
+
+				//en informer la GUI
+				System.out.println("Le Fichier a été envoyé.");
+			} else {
+				System.out.println("L'ordre d'envoie n'as pas était fait ! ");
+			}
+
+
 		} catch (Exception e) {
 			System.err.println("pb lors du transfert : " + e);
 		}
@@ -181,10 +195,17 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 
 	public void fileNOKReceived(Signal s, InetAddress from) {
 		//on kill la demande
+		String remoteUserName = ((FileTransferNotAccepted) s).getRemoteUsername();
 		
-		String remoteUser = others.getRemoteUserAdress(((FileTransferNotAccepted) s).getRemoteUsername()).toString();
+		System.out.println(remoteUserName);
+		
+		String remoteUser = others.getRemoteUserAdress(remoteUserName).toString();
 		String fileName = ((FileTransferNotAccepted) s).getFileName();
 		System.out.println(remoteUser + " a refusé le transfert du fichier " + fileName);
+		
+		demandeFile.free();
+		demandeFile = null;
+		
 	}
 
 	public void fileTransferReceived(Signal s) {
@@ -206,128 +227,6 @@ public class Controle implements ActionListener, WindowListener, MouseListener {
 	public boolean getConnected() {
 		return this.connected;
 	}
-
 	////////////////////////////////////////////////:
 	////////////////////////////////////////////////:
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == a.getConnectButton()) {
-			String myName = a.getUsernameTextArea().getText();
-			a.dispose();
-			i = new Interface(this);
-			connect(myName);
-			//username=a.getUsernameTextArea().getText();
-
-
-		} else if (e.getSource() == i.getSendButton()) {
-			sendMessage(i.getMessageTextArea().getText(), i.getRemoteTextField().getText());
-
-
-			//System.out.println(i.getUserSelected());
-		} else if (e.getSource() == i.getDisconnectButton()) {
-			disconnect();
-			System.out.println("disco called (controle)");
-			// à relier sur la gui.
-
-		} else if (e.getSource() == i.getFileButton()) {
-			final JFileChooser fc = new JFileChooser();
-			try {
-				int returnVal = fc.showOpenDialog(i);
-
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = fc.getSelectedFile();
-					demandeFile = new demandeFileTrans();
-					demandeFile.setFile(file);
-					demandeFile.setRemotUser(i.getRemoteTextField().getText());
-					demandeFile.settaille(file.length());
-					demandeFile.use();
-					
-					i.getConversationTextArea().append("Chose: " + file.getName() + ".\n");
-					
-					sendFileProp();
-				}
-			} catch (Exception exc) {
-				System.err.println("Erreur lors de l'ouverture de l'explorer : " + e);
-			}
-		} else if (e.getSource() == ft.getAcceptButton()) {
-			sendFileOK(ft.getFileLabel().getText(), ft.getRemoteLabel().getText());
-			ft.setVisible(false);
-		} else if (e.getSource() == ft.getRefuseButton()) {
-
-			sendFileNOK(ft.getFileLabel().getText(), ft.getRemoteLabel().getText());
-			ft.setVisible(false);
-		}
-
-
-	}
-
-	private void disconnect() {
-		sendBye();
-		nI.killServe();
-		nI.closeSocket();
-		i.dispose();
-		System.out.println("TOUT EST BIEN FINI !");
-		//To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void windowOpened(WindowEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void windowClosing(WindowEvent e) {
-		disconnect();
-	}
-
-	@Override
-	public void windowClosed(WindowEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void windowIconified(WindowEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void windowActivated(WindowEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		if ((e.getSource() == i.getUsersList()) && (i.getUserSelected() != null)) {
-			i.setRemoteTextField(i.getUserSelected());
-		}
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
 }
