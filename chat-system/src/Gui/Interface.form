@@ -100,7 +100,7 @@
         <Property name="text" type="java.lang.String" value="Send"/>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="sendButton.addActionListener(c);"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="sendButton.addActionListener(gui);"/>
       </AuxValues>
     </Component>
     <Container class="javax.swing.JScrollPane" name="jScrollPane4">
@@ -158,7 +158,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="usersList.addMouseListener(c);"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="usersList.addMouseListener(gui);"/>
           </AuxValues>
         </Component>
       </SubComponents>
@@ -184,7 +184,7 @@
         <Property name="text" type="java.lang.String" value="File"/>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fileButton.addActionListener(c);"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fileButton.addActionListener(gui);"/>
       </AuxValues>
     </Component>
     <Component class="javax.swing.JButton" name="disconnectButton">
@@ -192,7 +192,7 @@
         <Property name="text" type="java.lang.String" value="Disconnect"/>
       </Properties>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="disconnectButton.addActionListener(c);"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="disconnectButton.addActionListener(gui);"/>
       </AuxValues>
     </Component>
   </SubComponents>

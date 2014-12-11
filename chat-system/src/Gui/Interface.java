@@ -17,12 +17,12 @@ public class Interface extends javax.swing.JFrame {
     /**
      * Creates new form NewJFrame
      */
-    private Controle c;
+  private Gui gui;
 	private DefaultListModel modeList = new DefaultListModel();
 
-	public Interface(Controle c) {
-		this.addWindowListener(c);
-		this.c = c;
+	public Interface(Gui g) {
+		this.addWindowListener(g);
+		this.gui = g;
 		initComponents();
 		this.setVisible(true);
 	}
@@ -53,7 +53,7 @@ public class Interface extends javax.swing.JFrame {
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
     sendButton.setText("Send");
-    sendButton.addActionListener(c);
+    sendButton.addActionListener(gui);
 
     messageTextArea.setColumns(20);
     messageTextArea.setRows(5);
@@ -68,7 +68,7 @@ public class Interface extends javax.swing.JFrame {
     jScrollPane5.setViewportView(conversationTextArea);
 
     usersList.setModel(modeList);
-    usersList.addMouseListener(c);
+    usersList.addMouseListener(gui);
     jScrollPane1.setViewportView(usersList);
 
     jLabel4.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
@@ -78,10 +78,10 @@ public class Interface extends javax.swing.JFrame {
     jLabel2.setText("Users connected");
 
     fileButton.setText("File");
-    fileButton.addActionListener(c);
+    fileButton.addActionListener(gui);
 
     disconnectButton.setText("Disconnect");
-    disconnectButton.addActionListener(c);
+    disconnectButton.addActionListener(gui);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -302,7 +302,7 @@ public class Interface extends javax.swing.JFrame {
 	 */
 	public void setUsersList(javax.swing.JList usersList) {
 		this.usersList = usersList;
-		usersList.addMouseListener(c);
+		usersList.addMouseListener(gui);
 	}
 
     /**

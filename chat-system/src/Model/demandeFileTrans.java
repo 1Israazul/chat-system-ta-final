@@ -17,6 +17,7 @@ public class demandeFileTrans {
 	File filetoSend;
 	long taille;
 	boolean isUsed;
+	String fileName;
 	
 	
 	public demandeFileTrans(){
@@ -35,7 +36,12 @@ public class demandeFileTrans {
 	}
 	
 	
-	
+	public String getFileName(){
+		return this.fileName;
+	}
+	public void setFileName(String name){
+		this.fileName = name;
+	}
 	public String getRemotUser(){
 		return this.remoteUser;
 	}
@@ -47,6 +53,7 @@ public class demandeFileTrans {
 	}
 	public void setFile(File theFile){
 		this.filetoSend = theFile;
+		this.fileName = theFile.getName();
 	}
 	public long gettaille(){
 		return this.taille;
