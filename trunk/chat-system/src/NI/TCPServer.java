@@ -10,22 +10,41 @@ import java.io.*;
  *
  * @author bardey
  */
-public class TCPServer {
+public class TCPServer extends Thread {
+		Socket sock;
 		ServerSocket soc;
-	
+		int taille ;
+		byte[] data;
+		MyNetworkInterface nI;
 
-	public TCPServer(byte [] data,int port, int taille){
-		 int more = 0;
-		 int total = 0;
-		 ByteArrayOutputStream inData = new ByteArrayOutputStream();
+	public TCPServer(int port, int taille, MyNetworkInterface pere){
+		 this.taille = taille; 
+		 this.nI = pere;
 		try{
-			soc = new ServerSocket(port);
-			Socket sock = soc.accept();		
+			ServerSocket soc = new ServerSocket(port);
+				
 			//System.out.println("connexion ok");
+		}catch(Exception e){
+			System.out.println("Connexion échouée (serveur)"+e);
+		}
+	}
+			
+	public void run(){
+		int more = 0;
+		int total = 0;
+		ByteArrayOutputStream inData = new ByteArrayOutputStream();
+		data = new byte[taille];
+		
+			
+		try{
+			sock = soc.accept();
+			
 			byte [] tamp = new byte [taille]; 
 			InputStream input = sock.getInputStream();
 			
-			while(total <= taille){			
+			while(total <= taille){	
+				
+				System.out.println("ServeTCP is recceing");
 				input.read(tamp);
 				inData.write(tamp, 0, more);
 				more = input.read(tamp);
@@ -33,9 +52,10 @@ public class TCPServer {
 				
 				total = total + more;
 			}
-			
 			//passer par un tampon fos.write et close
 			sock.close();
+			nI.fichierRecuParTCPServer(data);
+			
 		}catch(Exception e){
 			System.out.println("Connexion échouée (serveur)"+e);
 		}
