@@ -10,7 +10,7 @@ import Model.*;
 import Gui.*;
 
 import java.awt.event.*;
-import NI.MyNetworkInterface;
+import NI.*;
 import java.net.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +29,7 @@ public class Controle  {
 	private boolean connected = false;
 	private demandeFileTrans demandeFile;
 	private Gui gui;
+	private TCPServer FilleReceiver;
 
 	//public String username;
 	public Controle(MyNetworkInterface nI, RemoteUsers o, Gui g) {
@@ -75,7 +76,7 @@ public class Controle  {
 		addNewRemotUser(userName, from);
 
 		try {
-			nI.sendHelloOK(me.getUserName(), others.getRemoteUserAdress(userName));
+			nI.sendHelloOK(me.getUserNameWithIP(), others.getRemoteUserAdress(userName));
 		} catch (Exception e) {
 			System.err.println(e);
 		}
@@ -107,7 +108,7 @@ public class Controle  {
 	public void sendMessage(String message, String remoteUser) {
 		InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 		//System.out.println("");
-		nI.sendTextMessage(message, me.getUserName(), remoteAddr);
+		nI.sendTextMessage(message, me.getUserNameWithIP(), remoteAddr);
 		
 		gui.messageSent(message, remoteUser);
 		
@@ -155,6 +156,13 @@ public class Controle  {
 
 		try {
 
+			//on doit ici ouvrir le server TCP avec son propre thread ! 
+			int taille = (int) demandeFile.gettaille();
+			nI.lancerFileReceiver(taille);
+			//on a lancer le serveur pour recevoir le fichier;
+			
+			System.out.println("Le server est parti seul et moi j'en voie le fileOK (controler)");
+			
 			InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 			nI.sendFileTransferAccepted(file, remoteAddr);
 		} catch (Exception e) {
@@ -167,6 +175,9 @@ public class Controle  {
 		try {
 			InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 			nI.sendFileTransferNotAccepted(file ,remoteUser,remoteAddr );
+			//la demande a été refucé, on l'efasse
+			demandeFile.free();
+			demandeFile = null;
 		} catch (Exception e) {
 			System.err.println(e);
 		}
@@ -179,8 +190,8 @@ public class Controle  {
 			//debug necessaire : others.getRemoteUserAdress(demandeFile.getRemotUser()) == from
 			if (demandeFile.canUse()) {
 				System.out.println("Le Fichier a été accepté et est encours d'envoi");
-				nI.sendFileTransfer(demandeFile, from); //ok ! revoir la fonction
-
+				nI.sendFileTransfer(demandeFile.getFile(), (int)demandeFile.gettaille(), from); //ok ! revoir la fonction
+				
 				//en informer la GUI
 				System.out.println("Le Fichier a été envoyé.");
 			} else {
@@ -197,25 +208,41 @@ public class Controle  {
 		//on kill la demande
 		String remoteUserName = ((FileTransferNotAccepted) s).getRemoteUsername();
 		
-		System.out.println(remoteUserName);
+		//System.out.println(remoteUserName);
 		
+		// Debug = 
 		String remoteUser = others.getRemoteUserAdress(remoteUserName).toString();
 		String fileName = ((FileTransferNotAccepted) s).getFileName();
 		System.out.println(remoteUser + " a refusé le transfert du fichier " + fileName);
+		//notifier dans la gui
+		
 		
 		demandeFile.free();
-		demandeFile = null;
-		
+		demandeFile = null;		
 	}
 
-	public void fileTransferReceived(Signal s) {
-		byte[] file = ((FileTransfer) s).getFile();
+	public void fileTransferReceived(long taille,byte[] file) {
+		//byte[] file = new byte[(int)taille];
 		try {
-			FileOutputStream fos = new FileOutputStream("C:\\Users\\Alexandre\\Downloads\\a"); //NONONONONONONONONONONONON
+			
+			//verification que ce qu'on a rçu corespond bien à ce qu'on attend.
+			
+			//on peu ajoute un folder picker pour que l'utilisateur sache ou il 
+			//le fichier qu'il va recevoir
+			File fichier = new File("~/Bureau/"+demandeFile.getFileName());
+			FileOutputStream fos = new FileOutputStream(fichier); 
 			fos.write(file);
 			fos.close();
+			
+			//Informer la gui que le ficheir est bien arrivé dsur notre machine (et ou)
+			
+			
+			
+			//la demande a été rempli on tu sa représentation dans le programme 
+			demandeFile = null;
+			
 		} catch (Exception e) {
-			System.err.println("erreur lors du transfert du fichier : " + e);
+			System.err.println("erreur de l'écriture du fichier (controler) : " + e);
 		}
 
 	}
@@ -227,6 +254,4 @@ public class Controle  {
 	public boolean getConnected() {
 		return this.connected;
 	}
-	////////////////////////////////////////////////:
-	////////////////////////////////////////////////:
 }

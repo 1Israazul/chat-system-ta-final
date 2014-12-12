@@ -8,6 +8,7 @@ import Model.demandeFileTrans;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
+import NI.FileNotSentEX;
 
 /*
  * To change this template, choose Tools | Templates
@@ -29,6 +30,7 @@ public class MyNetworkInterface {
 	private InetAddress remoteFileSender;
 	private InetAddress broadCast;
 	private TCPServer serv;
+	private byte[] filebytes;
 
 	public MyNetworkInterface() {
 		try {
@@ -72,6 +74,24 @@ public class MyNetworkInterface {
 	public void closeSocket() {
 		sock.close();
 	}
+	
+	public void lancerFileReceiver(int taille){
+		serv = new TCPServer(port, taille, this);
+		serv.start();
+		serv = null;//Sebastien Neumann m'a dit qu'il fallait mettre ça
+		System.out.println("Le Server TCT a été lancé (NI)");
+	}
+	public void fichierRecuParTCPServer(byte [] data){
+	
+		try {
+			c.fileTransferReceived(port, data);
+			
+			System.out.println("file transfer reçu (NI)");
+		} catch (Exception e) {
+			System.err.println("le fichier n'est pas parti (NI): " + e);
+		}
+	}
+	
 
 	private void createUDPSender() {
 		try {
@@ -105,7 +125,7 @@ public class MyNetworkInterface {
 
 	public void sendHelloOK(String uN, InetAddress remoteAddr) {
 		try {
-			uN = uN.concat("@").concat(this.myAddr.toString().substring(1));
+			//uN = uN.concat("@").concat(this.myAddr.toString().substring(1));
 			HelloOK h = new HelloOK(uN);
 
 			byte[] mess = signals.Signal.toByteArray(h);
@@ -142,7 +162,8 @@ public class MyNetworkInterface {
 		FileTransferAccepted ftA = new FileTransferAccepted(file, this.myAddr.toString().substring(1));
 		try {
 			byte[] transferAccepted = signals.Signal.toByteArray(ftA);
-			send.send(transferAccepted, to, port); //UDP ok
+			send.send(transferAccepted, to, port); 		
+			
 		} catch (Exception e) {
 			System.err.println("erreur acceptation transfert : " + e);
 		}
@@ -158,41 +179,23 @@ public class MyNetworkInterface {
 		}
 	}
 
-	public void sendFileTransfer(demandeFileTrans demande, InetAddress to) {
+	public void sendFileTransfer(File fichier, int taille, InetAddress to) throws FileNotFoundException, Exception{
 		try {
-			FileInputStream is = new FileInputStream(demande.getFile());
-			byte[] data = new byte[(int) demande.gettaille()];//okay 
+			FileInputStream is = new FileInputStream(fichier);
+			byte[] data = new byte[taille];//okay 
 			is.read(data);
 
 			TCPSender sendTCP = new TCPSender(data, to, port);
-			//System.out.println("file transfer envoyé");
+			System.out.println("file transfer envoyé");
 
 		} catch (Exception e) {
-			System.err.println("le fichier n'est pas parti : " + e);
+			System.err.println("le fichier n'est pas parti (NI): " + e);
+			throw FileNotSentEX(e);
 		}
 
 	}
 
-	public void recieveFileTransfer(demandeFileTrans demande) {
-
-		try {
-			byte[] data = new byte[(int) demande.gettaille()];
-			serv = new TCPServer(data, port, (int) demande.gettaille());
-
-			//ça doit marcher cf stackoverflow
-
-			FileOutputStream fos = new FileOutputStream("PATH! ");
-			fos.write(data);
-			fos.close();
-
-			System.out.println("file transfer reçu");
-		} catch (Exception e) {
-			System.err.println("le fichier n'est pas parti : " + e);
-		}
-
-	}
-
-	public void sendBy(String me) {
+	public void sendBy(String me)  {
 		me = me.concat("@").concat(this.myAddr.toString().substring(1));
 		Goodbye bye = new Goodbye(me);
 		try {
@@ -234,11 +237,6 @@ public class MyNetworkInterface {
 		c.fileNOKReceived(res, from);
 	}
 
-	public void fileTransferReceived(Signal res) {
-		//System.out.println("pasage dans ni");
-		c.fileTransferReceived(res);
-	}
-
 	private void getIpOfInterfac(String inter) throws UnknownHostException {
 		try {
 			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
@@ -272,5 +270,9 @@ public class MyNetworkInterface {
 			System.out.println(" (error retrieving network interface list)");
 		}
 
+	}
+
+	private Exception FileNotSentEX(Exception e) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
