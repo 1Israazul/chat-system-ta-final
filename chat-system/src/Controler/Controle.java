@@ -44,7 +44,7 @@ public class Controle  {
 		if (checkUserName(userName)) {
 			//creer le NI ici ! 
 			
-			
+                        nI.creatServers();
 			this.me = new Me();
 			this.me.setUserName(userName);
 			this.me.setUserNameWithIP(userName+"@"+nI.getIpString());

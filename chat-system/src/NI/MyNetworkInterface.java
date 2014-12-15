@@ -33,8 +33,11 @@ public class MyNetworkInterface {
 	private byte[] filebytes;
 
 	public MyNetworkInterface() {
-		try {
+		
 
+	}
+        public void creatServers(){
+            try {
 			getIpOfInterfac("eth0");
 
 			//myAddr = InetAddress.getByName("10.208.255.202");
@@ -51,8 +54,7 @@ public class MyNetworkInterface {
 		//creer son socket d'envoi udp
 		createUDPSender();
 		runServer();
-
-	}
+        }
 	
 	public String getIpString(){
 		return this.myAddr.toString().substring(1);
