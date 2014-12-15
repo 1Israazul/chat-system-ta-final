@@ -42,6 +42,9 @@ public class Controle  {
 
 	public void connect(String userName) {
 		if (checkUserName(userName)) {
+			//creer le NI ici ! 
+			
+			
 			this.me = new Me();
 			this.me.setUserName(userName);
 			this.me.setUserNameWithIP(userName+"@"+nI.getIpString());
@@ -58,7 +61,7 @@ public class Controle  {
 		sendBye();
 		nI.killServe();
 		nI.closeSocket();
-		System.out.println("TOUT EST BIEN FINI !");
+		System.out.println("TOUS LES SOCKET SONT CLOSE !");
 		//To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -73,14 +76,19 @@ public class Controle  {
 
 	public void helloReceived(Signal hy, InetAddress from) {
 		String userName = ((Hello) hy).getUsername();
-		addNewRemotUser(userName, from);
+		
+		
+		System.out.println(userName+"          "+me.getUserNameWithIP());
 
-		try {
-			nI.sendHelloOK(me.getUserNameWithIP(), others.getRemoteUserAdress(userName));
-		} catch (Exception e) {
-			System.err.println(e);
+		if (!userName.equals(me.getUserNameWithIP())){
+			addNewRemotUser(userName, from);
+		
+			try {
+				nI.sendHelloOK(me.getUserNameWithIP(), others.getRemoteUserAdress(userName));
+			} catch (Exception e) {
+				System.err.println(e);
+			}
 		}
-
 	}
 
 	public void texteMessageReceived(Signal hy) {
@@ -161,10 +169,11 @@ public class Controle  {
 			nI.lancerFileReceiver(taille);
 			//on a lancer le serveur pour recevoir le fichier;
 			
-			System.out.println("Le server est parti seul et moi j'en voie le fileOK (controler)");
+			System.out.println("Le server est parti pour recevoir et moi j'en voie le fileOK (controler)");
 			
 			InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
-			nI.sendFileTransferAccepted(file, remoteAddr);
+			nI.sendFileTransferAccepted(file, remoteAddr, me.getUserNameWithIP());
+			
 		} catch (Exception e) {
 			System.err.println(e);
 		}
@@ -176,6 +185,7 @@ public class Controle  {
 			InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
 			nI.sendFileTransferNotAccepted(file ,remoteUser,remoteAddr );
 			//la demande a été refucé, on l'efasse
+			gui.fileRefused(remoteUser, file);
 			demandeFile.free();
 			demandeFile = null;
 		} catch (Exception e) {
@@ -194,13 +204,18 @@ public class Controle  {
 				
 				//en informer la GUI
 				System.out.println("Le Fichier a été envoyé.");
+				gui.fileAcceptedIsSending(demandeFile.getRemotUser(), demandeFile.getFile().getName() );
+				
+				demandeFile = null;
 			} else {
-				System.out.println("L'ordre d'envoie n'as pas était fait ! ");
+				System.out.println("Quelqu'un vous attaque ! ");
+				demandeFile = null;
+				
 			}
-
-
 		} catch (Exception e) {
+			demandeFile = null;
 			System.err.println("pb lors du transfert : " + e);
+			gui.somethingWentRong();
 		}
 	}
 
@@ -208,15 +223,11 @@ public class Controle  {
 		//on kill la demande
 		String remoteUserName = ((FileTransferNotAccepted) s).getRemoteUsername();
 		
-		//System.out.println(remoteUserName);
-		
-		// Debug = 
 		String remoteUser = others.getRemoteUserAdress(remoteUserName).toString();
 		String fileName = ((FileTransferNotAccepted) s).getFileName();
 		System.out.println(remoteUser + " a refusé le transfert du fichier " + fileName);
-		//notifier dans la gui
-		
-		
+		//notifier dans la gui		
+		gui.fileRefused(demandeFile.getRemotUser(),demandeFile.getFileName());
 		demandeFile.free();
 		demandeFile = null;		
 	}
@@ -224,20 +235,18 @@ public class Controle  {
 	public void fileTransferReceived(long taille,byte[] file) {
 		//byte[] file = new byte[(int)taille];
 		try {
-			
 			//verification que ce qu'on a rçu corespond bien à ce qu'on attend.
 			
 			//on peu ajoute un folder picker pour que l'utilisateur sache ou il 
 			//le fichier qu'il va recevoir
-			File fichier = new File("~/Bureau/"+demandeFile.getFileName());
+			String where = System.getProperty("user.dir");
+			//ecriture du fichier
+			File fichier = new File(where+"/"+demandeFile.getFileName());
 			FileOutputStream fos = new FileOutputStream(fichier); 
 			fos.write(file);
 			fos.close();
-			
 			//Informer la gui que le ficheir est bien arrivé dsur notre machine (et ou)
-			
-			
-			
+			gui.filleRecieved(demandeFile.getRemotUser(), demandeFile.getFileName(), where);
 			//la demande a été rempli on tu sa représentation dans le programme 
 			demandeFile = null;
 			

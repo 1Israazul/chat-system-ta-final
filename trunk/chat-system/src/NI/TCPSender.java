@@ -21,15 +21,20 @@ public class TCPSender {
 			
 		Socket socket = new Socket(forWhom,port);
 		//System.out.println("SOCKET = " + socket);	
-		BufferedWriter write = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+		/*BufferedWriter write = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		PrintWriter pred = new PrintWriter(write);
 		pred.println(data) ;
 		pred.close();
-		socket.close();
-
+		socket.close();*/
+		OutputStream writter = socket.getOutputStream();
+		writter.write(data);
+		writter.flush();
+		writter.close();
+		
 		
 		}catch(Exception e){
 			System.out.println("Connexion échouée (côté client)"+e);
+			
 		}
 	}
 

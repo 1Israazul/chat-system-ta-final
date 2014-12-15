@@ -41,6 +41,7 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 		ft = new FileTransferDialog(nameFile, from, this);
 	
 	}
+	
 		
 	
 	public void addRemoteUser(String userName){
@@ -61,10 +62,19 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 		i.getConversationTextArea().append("Sent file transfer proposal (" + fileName+ ") to : " + remoteU);
 
 	}
-					
-	
-	
-	
+	public void fileRefused(String remoteU, String fileName){
+		i.getConversationTextArea().append(remoteU+" has REFUSED the transfere, "+ fileName);
+	}
+	public void fileAcceptedIsSending(String remoteU, String fileName){
+		i.getConversationTextArea().append(remoteU+" has accepted the transfere, "+ fileName+" has been sent");
+	}
+	public void somethingWentRong(){
+		i.getConversationTextArea().append("SOMETHING WHEN WRONG DURING THE TRANSFERE");
+	}
+	public void filleRecieved(String remoteU, String fileName, String where){
+		i.getConversationTextArea().append("You recieved a fille in : "+where+" from "+remoteU);
+	}
+		
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == a.getConnectButton()) {
@@ -80,6 +90,7 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 		} else if (e.getSource() == i.getDisconnectButton()) {
 			c.disconnect();
 			i.dispose();
+			a = new Accueil(this);
 			//System.out.println("disco called (controle)");
 			// à relier sur la gui.
 
