@@ -158,8 +158,8 @@ public class MyNetworkInterface {
 		}
 	}
 
-	public void sendFileTransferAccepted(String file, InetAddress to) {
-		FileTransferAccepted ftA = new FileTransferAccepted(file, this.myAddr.toString().substring(1));
+	public void sendFileTransferAccepted(String file, InetAddress to, String me) {
+		FileTransferAccepted ftA = new FileTransferAccepted(file, me );
 		try {
 			byte[] transferAccepted = signals.Signal.toByteArray(ftA);
 			send.send(transferAccepted, to, port); 		

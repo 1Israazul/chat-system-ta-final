@@ -21,7 +21,7 @@ public class TCPServer extends Thread {
 		 this.taille = taille; 
 		 this.nI = pere;
 		try{
-			ServerSocket soc = new ServerSocket(port);
+			soc = new ServerSocket(port);
 				
 			//System.out.println("connexion ok");
 		}catch(Exception e){
@@ -29,7 +29,7 @@ public class TCPServer extends Thread {
 		}
 	}
 			
-	public void run(){
+	public synchronized void run(){
 		int more = 0;
 		int total = 0;
 		ByteArrayOutputStream inData = new ByteArrayOutputStream();
@@ -37,20 +37,25 @@ public class TCPServer extends Thread {
 		
 			
 		try{
-			sock = soc.accept();
 			
+			sock = soc.accept();
 			byte [] tamp = new byte [taille]; 
 			InputStream input = sock.getInputStream();
 			
-			while(total <= taille){	
+			while(total < taille){	
 				
-				System.out.println("ServeTCP is recceing");
-				input.read(tamp);
-				inData.write(tamp, 0, more);
+				System.out.println("ServeTCP is recceing");				
 				more = input.read(tamp);
-				System.arraycopy(inData, 0, data, total, more);
+				/*
+				System.out.println("taille : "+taille);
+				System.out.println("TAMP ("+tamp.length+"): "+tamp);
+				System.out.println("DATA ("+data.length+"): "+data);
+				System.out.println("total = "+total+" more : "+more);
+				*/
+				System.arraycopy(tamp, 0, data, total, more);
 				
 				total = total + more;
+				
 			}
 			//passer par un tampon fos.write et close
 			sock.close();
@@ -58,6 +63,7 @@ public class TCPServer extends Thread {
 			
 		}catch(Exception e){
 			System.out.println("Connexion échouée (serveur)"+e);
+			e.printStackTrace();
 		}
 	}
 

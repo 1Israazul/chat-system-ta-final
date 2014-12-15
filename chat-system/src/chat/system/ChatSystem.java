@@ -35,6 +35,7 @@ public class ChatSystem {
 			controle = new Controle(nI, remoteUsers, gui);
 			gui.setControler(controle);
 			nI.setControler(controle);
+			//plus rien sur le NI ici ! pas besion ! 
 
 
 			gui.commencer();
