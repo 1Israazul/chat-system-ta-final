@@ -9,13 +9,18 @@ import java.net.Socket;
 import java.net.*;
 
 /**
- *
- * @author bardey
+ * TCP socket that will send the file. (or anything)
+ * @author bardey and dauriac
  */
 public class TCPSender {
 	
-	
-	public TCPSender(byte [] data,InetAddress forWhom, int port){
+    /**
+     *Everything is done here
+     * @param data byte you are sending (the file)
+     * @param forWhom adress to whom you want to send the data
+     * @param port source port to use
+     */
+    public TCPSender(byte [] data,InetAddress forWhom, int port){
 	
 		try{
 			

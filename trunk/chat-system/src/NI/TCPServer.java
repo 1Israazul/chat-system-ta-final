@@ -7,8 +7,8 @@ import java.net.*;
 import java.io.*;
 
 /**
- *
- * @author bardey
+ *TCP server used to received files
+ * @author bardey and dauriac
  */
 public class TCPServer extends Thread {
 		Socket sock;
@@ -17,7 +17,13 @@ public class TCPServer extends Thread {
 		byte[] data;
 		MyNetworkInterface nI;
 
-	public TCPServer(int port, int taille, MyNetworkInterface pere){
+    /**
+     *Simple constructeur use to initialise some variables 
+     * @param port on to wait for a file
+     * @param taille size of the file to be expected
+     * @param pere linl to the NetWork management interface
+     */
+    public TCPServer(int port, int taille, MyNetworkInterface pere){
 		 this.taille = taille; 
 		 this.nI = pere;
 		try{
@@ -29,7 +35,10 @@ public class TCPServer extends Thread {
 		}
 	}
 			
-	public synchronized void run(){
+    /**
+     *Receive the file 
+     */
+    public synchronized void run(){
 		int more = 0;
 		int total = 0;
 		ByteArrayOutputStream inData = new ByteArrayOutputStream();

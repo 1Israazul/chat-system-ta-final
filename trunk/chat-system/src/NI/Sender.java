@@ -7,17 +7,29 @@ package NI;
 import java.net.*;
 
 /**
- *
+ *Sender of our signal over a UDP transport protocole
  * @author bardey
  */
 public class Sender {
 		private DatagramSocket sock;
-	public Sender(DatagramSocket s) throws SocketException{
+
+    /**
+     *Simple constructer
+     * @param s socket to use
+     * @throws SocketException
+     */
+    public Sender(DatagramSocket s) throws SocketException{
 		this.sock = s; 
                 this.sock.setBroadcast(true);
 	}
 	
-	public void send(byte[] message, InetAddress addr,int port){
+    /**
+     *Sends any data you need to send
+     * @param message data to send
+     * @param addr address to whom send the message
+     * @param port source port to use
+     */
+    public void send(byte[] message, InetAddress addr,int port){
 		DatagramPacket sendPacket;
 		
     try{

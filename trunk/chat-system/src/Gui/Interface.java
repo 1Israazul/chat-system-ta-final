@@ -8,10 +8,7 @@ package Gui;
 import Controler.Controle;
 import javax.swing.DefaultListModel;
 
-/**
- *
- * @author Alexandre
- */
+
 public class Interface extends javax.swing.JFrame {
 
     /**

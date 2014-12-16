@@ -9,10 +9,7 @@ import java.awt.event.*;
 import Controler.*;
 
 
-/**
- *
- * @author Alexandre
- */
+
 public class Accueil extends javax.swing.JFrame {
 
     /**
