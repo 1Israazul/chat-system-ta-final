@@ -15,266 +15,405 @@ import NI.FileNotSentEX;
  * and open the template in the editor.
  */
 /**
+ * This class implements all the necessari signals and message needed to
+ * interfer with the local network. You can performe a connection, send a
+ * message, a file...
  *
- * @author bardey
+ * @author Bardey and Dauriac
  */
 public class MyNetworkInterface {
 
-	private int port = 4444;
-	private DatagramSocket sock;
-	private int lengthOfdataRcv = 1024; //1024;
-	private Server serve;
-	private Sender send;
-	private Controle c;
-	private InetAddress myAddr;
-	private InetAddress remoteFileSender;
-	private InetAddress broadCast;
-	private TCPServer serv;
-	private byte[] filebytes;
+    private int port = 4444;
+    private DatagramSocket sock;
+    private int lengthOfdataRcv = 1024; //1024;
+    private Server serve;
+    private Sender send;
+    private Controle c;
+    private InetAddress myAddr;
+    private InetAddress remoteFileSender;
+    private InetAddress broadCast;
+    private TCPServer serv;
+    private byte[] filebytes;
 
-	public MyNetworkInterface() {
-		
+    /**
+     * Constructeur of the class no need of any parameters
+     */
+    public MyNetworkInterface() {
+    }
 
-	}
-        public void creatServers(){
-            try {
-			getIpOfInterfac("eth0");
+    /**
+     * This is a crusual function, it will initialize all socket.
+     */
+    public void creatServers() {
+        try {
+            getIpOfInterfac("eth0");
 
 			//myAddr = InetAddress.getByName("10.208.255.202");
-			//broadCast = InetAddress.getByName("10.255.255.255");
-			System.out.println("Localhost : " + InetAddress.getLocalHost().getHostAddress());
-			sock = new DatagramSocket(port);
-			sock.setBroadcast(true);
+            //broadCast = InetAddress.getByName("10.255.255.255");
+            //System.out.println("Localhost : " + InetAddress.getLocalHost().getHostAddress());
+            sock = new DatagramSocket(port);
+            sock.setBroadcast(true);
 
-		} catch (Exception e) {
-			System.out.println("Network interface (creating the socket) : " + e);
-		}
-		//Il nous faut un server UDP et un client UDP
-		createUDPServer();
-		//creer son socket d'envoi udp
-		createUDPSender();
-		runServer();
+        } catch (Exception e) {
+            System.out.println("Network interface (creating the socket) : " + e);
         }
-	
-	public String getIpString(){
-		return this.myAddr.toString().substring(1);
-	}
+        //Il nous faut un server UDP et un client UDP
+        createUDPServer();
+        //creer son socket d'envoi udp
+        createUDPSender();
+        runServer();
+    }
 
-	public void setControler(Controle c) {
-		this.c = c;
-	}
+    /**
+     * Send back a string representation of the ip adresse you are using.
+     *
+     * @return Your IP address
+     */
+    public String getIpString() {
+        return this.myAddr.toString().substring(1);
+    }
 
-	private void createUDPServer() {
-		serve = new Server(sock, lengthOfdataRcv, this);
+    /**
+     * Your network interface needs to be related to your contoler. This
+     * fucntion creates the link.
+     *
+     * @param c (controler)
+     */
+    public void setControler(Controle c) {
+        this.c = c;
+    }
 
-	}
+    /**
+     * Creats the UDPserveur that will receive all th esent signals.
+     */
+    private void createUDPServer() {
+        serve = new Server(sock, lengthOfdataRcv, this);
+    }
 
-	private void runServer() {
-		this.serve.start();
-	}
+    /**
+     * Starts the UDPServer, it will then starts functionning.
+     */
+    private void runServer() {
+        this.serve.start();
+    }
 
-	public void closeSocket() {
-		sock.close();
-	}
-	
-	public void lancerFileReceiver(int taille){
-		serv = new TCPServer(port, taille, this);
-		serv.start();
-		serv = null;//Sebastien Neumann m'a dit qu'il fallait mettre ça
-		System.out.println("Le Server TCT a été lancé (NI)");
-	}
-	public void fichierRecuParTCPServer(byte [] data){
-	
-		try {
-			c.fileTransferReceived(port, data);
-			
-			System.out.println("file transfer reçu (NI)");
-		} catch (Exception e) {
-			System.err.println("le fichier n'est pas parti (NI): " + e);
-		}
-	}
-	
+    /**
+     * Closes the recieving socket.
+     */
+    public void closeSocket() {
+        sock.close();
+    }
 
-	private void createUDPSender() {
-		try {
-			send = new Sender(sock);
-		} catch (SocketException ex) {
-			Logger.getLogger(MyNetworkInterface.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+    /**
+     * Stars the TCP server that will receives the sent fille.
+     *
+     * @param size Size of the file you want to receive
+     */
+    public void lancerFileReceiver(int taille) {
+        serv = new TCPServer(port, taille, this);
+        serv.start();
+        serv = null;//Sebastien Neumann m'a dit qu'il fallait mettre ça
+        System.out.println("Le Server TCT a été lancé (NI)");
+    }
 
-	public void sendUDPSomeShit(byte[] message, InetAddress addr) {
-		send.send(message, addr, port);
+    /**
+     * When you TCP has receive the fille it will call this function to send the
+     * data back to the contoler.
+     *
+     * @param data bytes of the file you want to send
+     */
+    public void fichierRecuParTCPServer(byte[] data) {
 
-	}
+        try {
+            c.fileTransferReceived(port, data);
 
-	public void killServe() {
-		serve.killMe();
-	}
+            System.out.println("file transfer reçu (NI)");
+        } catch (Exception e) {
+            System.err.println("le fichier n'est pas parti (NI): " + e);
+        }
+    }
 
-	public void sendHello(String uN) {
-		try {
-			Hello h = new Hello(uN);
-			byte[] mess = signals.Signal.toByteArray(h);
-			send.send(mess, broadCast, port);
-			System.out.println("hello envoyé à ");
+    /**
+     * This function is essential. It creats all the necessary ittems you need
+     * send the
+     */
+    private void createUDPSender() {
+        try {
+            send = new Sender(sock);
+        } catch (SocketException ex) {
+            Logger.getLogger(MyNetworkInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
-		} catch (Exception e) {
-			System.err.println("Le message Hello n'est pas parti : " + e);
-		}
+    /**
+     * Sends anything with the UDP sender module.
+     *
+     * @param message message you want to send
+     * @param addr address of the remote user you want to send this to
+     */
+    public void sendUDPSomeShit(byte[] message, InetAddress addr) {
+        send.send(message, addr, port);
 
-	}
+    }
 
-	public void sendHelloOK(String uN, InetAddress remoteAddr) {
-		try {
-			//uN = uN.concat("@").concat(this.myAddr.toString().substring(1));
-			HelloOK h = new HelloOK(uN);
+    /**
+     * Closes the UDP server. The network is not listening anymore.
+     */
+    public void killServe() {
+        serve.killMe();
+    }
 
-			byte[] mess = signals.Signal.toByteArray(h);
-			send.send(mess, remoteAddr, port);
-		} catch (Exception e) {
-			System.err.println("Le message HelloOK n'est pas parti : " + e);
-		}
-	}
+    /**
+     * Sends the Hello signal on the network.
+     *
+     * @param myUserName Your very own user name (respecting the convention)
+     */
+    public void sendHello(String uN) {
+        try {
+            Hello h = new Hello(uN);
+            byte[] mess = signals.Signal.toByteArray(h);
+            send.send(mess, broadCast, port);
+            System.out.println("hello envoyé à ");
 
-	public void sendTextMessage(String message, String me, InetAddress to) {
-		TextMessage tMess = new TextMessage(message, me, null);;
-		try {
-			byte[] mess = signals.Signal.toByteArray(tMess);
-			send.send(mess, to, port);
-		} catch (Exception e) {
-			System.err.println("Le TextMessage n'est pas parti : " + e);
-		}
+        } catch (Exception e) {
+            System.err.println("Le message Hello n'est pas parti : " + e);
+        }
 
-	}
+    }
 
-	public void sendFileProposal(demandeFileTrans demande, String me, InetAddress to) {
-		String fileName = demande.getFile().getName();
-		long size = demande.gettaille();
-		FileProposal fp = new FileProposal(fileName, size, me, null);
-		try {
-			byte[] proposal = signals.Signal.toByteArray(fp);
-			send.send(proposal, to, port);//UDP OK
-		} catch (Exception e) {
-			System.err.println("File proposal pas parti : " + e);
-		}
-	}
+    /**
+     * Sends the HelloOk Signal to a specific remote user.You need to inform the
+     * function of you user name and the destiniation IP adresse.
+     *
+     * @param myUserName Your very own user name (respecting the convention)
+     * @param remoteAddr adress of the remote user you will send this to
+     */
+    public void sendHelloOK(String uN, InetAddress remoteAddr) {
+        try {
+            //uN = uN.concat("@").concat(this.myAddr.toString().substring(1));
+            HelloOK h = new HelloOK(uN);
 
-	public void sendFileTransferAccepted(String file, InetAddress to, String me) {
-		FileTransferAccepted ftA = new FileTransferAccepted(file, me );
-		try {
-			byte[] transferAccepted = signals.Signal.toByteArray(ftA);
-			send.send(transferAccepted, to, port); 		
-			
-		} catch (Exception e) {
-			System.err.println("erreur acceptation transfert : " + e);
-		}
-	}
+            byte[] mess = signals.Signal.toByteArray(h);
+            send.send(mess, remoteAddr, port);
+        } catch (Exception e) {
+            System.err.println("Le message HelloOK n'est pas parti : " + e);
+        }
+    }
 
-	public void sendFileTransferNotAccepted(String file, String remoteUserName, InetAddress to) {
-		FileTransferNotAccepted ftNA = new FileTransferNotAccepted(file, remoteUserName);
-		try {
-			byte[] transferNotAccepted = signals.Signal.toByteArray(ftNA);
-			send.send(transferNotAccepted, to, port);
-		} catch (Exception e) {
-			System.err.println("erreur refus transfert : " + e);
-		}
-	}
+    /**
+     * Sends the TexteMessage Signal to a specific remote user.
+     *
+     * @param message message you want to send to your friend
+     * @param me Your very own user name (respecting the convention)
+     * @param to adress of the remote user you will send this to
+     */
+    public void sendTextMessage(String message, String me, InetAddress to) {
+        TextMessage tMess = new TextMessage(message, me, null);;
+        try {
+            byte[] mess = signals.Signal.toByteArray(tMess);
+            send.send(mess, to, port);
+        } catch (Exception e) {
+            System.err.println("Le TextMessage n'est pas parti : " + e);
+        }
 
-	public void sendFileTransfer(File fichier, int taille, InetAddress to) throws FileNotFoundException, Exception{
-		try {
-			FileInputStream is = new FileInputStream(fichier);
-			byte[] data = new byte[taille];//okay 
-			is.read(data);
+    }
 
-			TCPSender sendTCP = new TCPSender(data, to, port);
-			System.out.println("file transfer envoyé");
+    /**
+     * Sends a FilleProposal signal to a specific remote user.
+     *
+     * @param demande class conteining all the needed informations
+     * @param me Your very own user name (respecting the convention)
+     * @param to adress of the remote user you will send this to
+     */
+    public void sendFileProposal(demandeFileTrans demande, String me, InetAddress to) {
+        String fileName = demande.getFile().getName();
+        long size = demande.gettaille();
+        FileProposal fp = new FileProposal(fileName, size, me, null);
+        try {
+            byte[] proposal = signals.Signal.toByteArray(fp);
+            send.send(proposal, to, port);//UDP OK
+        } catch (Exception e) {
+            System.err.println("File proposal pas parti : " + e);
+        }
+    }
 
-		} catch (Exception e) {
-			System.err.println("le fichier n'est pas parti (NI): " + e);
-			throw FileNotSentEX(e);
-		}
+    /**
+     * Sends a fileTransferAccepted signal to a specific remote user.
+     *
+     * @param nameFile file name your accepted
+     * @param me Your very own user name (respecting the convention)
+     * @param to adress of the remote user you will send this to
+     */
+    public void sendFileTransferAccepted(String file, InetAddress to, String me) {
+        FileTransferAccepted ftA = new FileTransferAccepted(file, me); //chack that shit bro
+        try {
+            byte[] transferAccepted = signals.Signal.toByteArray(ftA);
+            send.send(transferAccepted, to, port);
+        } catch (Exception e) {
+            System.err.println("erreur acceptation transfert : " + e);
+        }
+    }
 
-	}
+    /**
+     * Sends a FileTransferNotAccepted signal to a specific remote user.
+     *
+     * @param nameFile file name your refused
+     * @param remoteUserName adress of the remote user you will send this to
+     * @param to adress of the remote user you will send this to
+     */
+    public void sendFileTransferNotAccepted(String file, String remoteUserName, InetAddress to) {
+        FileTransferNotAccepted ftNA = new FileTransferNotAccepted(file, remoteUserName);
+        try {
+            byte[] transferNotAccepted = signals.Signal.toByteArray(ftNA);
+            send.send(transferNotAccepted, to, port);
+        } catch (Exception e) {
+            System.err.println("erreur refus transfert : " + e);
+        }
+    }
 
-	public void sendBy(String me)  {
-		me = me.concat("@").concat(this.myAddr.toString().substring(1));
-		Goodbye bye = new Goodbye(me);
-		try {
-			byte[] mess = signals.Signal.toByteArray(bye);
-			send.send(mess, broadCast, port);
-			System.out.println("bye envoyé");
-		} catch (Exception e) {
-			System.err.println("Le Goodbye n'est pas parti : " + e);
-		}
-	}
+    /**
+     * Sends the file on the network.
+     *
+     * @param fichier file you are willing to sending
+     * @param taille size of the file you are sending
+     * @param to adress of the remote user you will send this to
+     * @throws FileNotFoundException
+     * @throws Exception
+     */
+    public void sendFileTransfer(File fichier, int taille, InetAddress to) throws FileNotFoundException, Exception {
+        try {
+            FileInputStream is = new FileInputStream(fichier);
+            byte[] data = new byte[taille];//okay 
+            is.read(data);
+            TCPSender sendTCP = new TCPSender(data, to, port);
+            System.out.println("file transfer envoyé");
+        } catch (Exception e) {
+            System.err.println("le fichier n'est pas parti (NI): " + e);
+        }
+    }
 
-	public void helloReceived(Signal res, InetAddress from) {
-		c.helloReceived(res, from);
+    /**
+     * Sends a GoodBye signal on the network.
+     *
+     * @param me Your very own user name (respecting the convention)
+     */
+    public void sendBy(String me) {
+        me = me.concat("@").concat(this.myAddr.toString().substring(1));
+        Goodbye bye = new Goodbye(me);
+        try {
+            byte[] mess = signals.Signal.toByteArray(bye);
+            send.send(mess, broadCast, port);
+            System.out.println("bye envoyé");
+        } catch (Exception e) {
+            System.err.println("Le Goodbye n'est pas parti : " + e);
+        }
+    }
 
-	}
+    /**
+     * Informes the controler that a Hello signal has been received.
+     *
+     * @param res signal you received
+     * @param from from whom you received the signam
+     */
+    public void helloReceived(Signal res, InetAddress from) {
+        c.helloReceived(res, from);
 
-	public void helloOKReceived(Signal res, InetAddress from) {
-		c.helloOKReceived(res, from);
+    }
 
-	}
+    /**
+     * Informes the controler that a HelloOK signal has been received.
+     *
+     * @param res signal you received
+     * @param from from whom you received the signam
+     */
+    public void helloOKReceived(Signal res, InetAddress from) {
+        c.helloOKReceived(res, from);
 
-	public void messageReceived(Signal res) {
-		c.texteMessageReceived(res);
-	}
+    }
 
-	public void byeReceived(Signal res) {
-		c.byeReceived(res);
-	}
+    /**
+     * Informes the controler that a TextMessage signal has been received.
+     *
+     * @param res res signal you received
+     */
+    public void messageReceived(Signal res) {
+        c.texteMessageReceived(res);
+    }
 
-	public void fileProposalReceived(Signal res) {
-		c.fileProposalReceived(res);
-	}
+    /**
+     * Informes the controler that a GoodBye signal has been received.
+     *
+     * @param res res signal you received
+     */
+    public void byeReceived(Signal res) {
+        c.byeReceived(res);
+    }
 
-	public void fileTransferAcceptedReceived(Signal res, InetAddress from) {
-		c.fileOKReceived(res, from);
-	}
+    /**
+     * Informes the controler that a FileProposal signal has been received.
+     *
+     * @param res res signal you received
+     */
+    public void fileProposalReceived(Signal res) {
+        c.fileProposalReceived(res);
+    }
 
-	public void fileTransferNotAcceptedReceived(Signal res, InetAddress from) {
-		c.fileNOKReceived(res, from);
-	}
+    /**
+     * Informes the controler that a TransferAcceptedReceived signal has been
+     * received.
+     *
+     * @param res signal you received
+     * @param from from whom you received the signam
+     */
+    public void fileTransferAcceptedReceived(Signal res, InetAddress from) {
+        c.fileOKReceived(res, from);
+    }
 
-	private void getIpOfInterfac(String inter) throws UnknownHostException {
-		try {
-			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-				NetworkInterface intf = en.nextElement();
+    /**
+     * Informes the controler that a FileTransferNotAccepted signal has been
+     * received.
+     *
+     * @param res signal you received
+     * @param from from whom you received the signam
+     */
+    public void fileTransferNotAcceptedReceived(Signal res, InetAddress from) {
+        c.fileNOKReceived(res, from);
+    }
 
-				System.out.println("    " + intf.getName() + " " + intf.getDisplayName());
-				if (intf.getName().equals(inter)) {
-					/* for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-					 //System.out.println("        " + enumIpAddr.nextElement().toString());
-					 InetAddress adressInterface = enumIpAddr.nextElement();
-					 if (adressInterface.getAddress().length == 4) {
-					 localIpAdress = adressInterface;
-					 }
-					 }*/
-					for (InterfaceAddress intAddress : intf.getInterfaceAddresses()) {
-						{
-							if (intAddress.getAddress().getAddress().length == 4) {
-								myAddr = intAddress.getAddress();
+    //this function does not concern anyone, is use ones and that's it we are not proud of it 
+    private void getIpOfInterfac(String inter) throws UnknownHostException {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+
+                System.out.println("    " + intf.getName() + " " + intf.getDisplayName());
+                if (intf.getName().equals(inter)) {
+                    /* for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                     //System.out.println("        " + enumIpAddr.nextElement().toString());
+                     InetAddress adressInterface = enumIpAddr.nextElement();
+                     if (adressInterface.getAddress().length == 4) {
+                     localIpAdress = adressInterface;
+                     }
+                     }*/
+                    for (InterfaceAddress intAddress : intf.getInterfaceAddresses()) {
+                        {
+                            if (intAddress.getAddress().getAddress().length == 4) {
+                                myAddr = intAddress.getAddress();
 								//System.out.println(myAddr);
-								//System.out.println(myAddr.getHostAddress());
-								//localIpAdressString=localIpAdress.getHostAddress();
-								broadCast = intAddress.getBroadcast();
+                                //System.out.println(myAddr.getHostAddress());
+                                //localIpAdressString=localIpAdress.getHostAddress();
+                                broadCast = intAddress.getBroadcast();
 								//broadcastString=broadcast.getHostAddress();
-								// System.out.println(intAddress.getBroadcast());
-							}
-						}
-					}
-				}
-			}
-		} catch (SocketException e) {
-			System.out.println(" (error retrieving network interface list)");
-		}
+                                // System.out.println(intAddress.getBroadcast());
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            System.out.println(" (error retrieving network interface list)");
+        }
 
-	}
+    }
 
-	private Exception FileNotSentEX(Exception e) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
 }

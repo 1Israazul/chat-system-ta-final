@@ -12,8 +12,8 @@ import chat.system.*;
 import javax.sound.midi.Soundbank;
 
 /**
- *
- * @author bardey
+ * UDP listener that notifys our system when a message is received.
+ * @author bardey and dauriac
  */
 public class Server extends Thread {
 	private DatagramSocket sock;
@@ -21,14 +21,22 @@ public class Server extends Thread {
 	private MyNetworkInterface nI;
 	private boolean canGo = true;
 	
-	
-	public Server(DatagramSocket sock, int lengthMax, MyNetworkInterface nI){
+    /**
+     *Constructeur, sets up every needed items
+     * @param sock socket, managed by the NI
+     * @param lengthMax my lenght of the packet received
+     * @param nI link to the NI
+     */
+    public Server(DatagramSocket sock, int lengthMax, MyNetworkInterface nI){
 		this.sock = sock;
 		this.lengthMax = lengthMax;
 		this.nI = nI;
 	}
 	
-	public void run(){
+    /**
+     *Start the server to listen and notify our system
+     */
+    public void run(){
 		InetAddress from; 
 		Signal res ;
 			//voir stak over flow pour les infos.
@@ -76,8 +84,10 @@ public class Server extends Thread {
 		
 	}
 	
-	
-	public void killMe(){
+    /**
+     *Stops the thread 
+     */
+    public void killMe(){
 		this.canGo = false;
 	}
 	

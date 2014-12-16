@@ -7,10 +7,8 @@ package Gui;
 
 import java.io.File;
 import Controler.*;
-/**
- *
- * @author Alexandre
- */
+
+
 public class FileTransferDialog extends javax.swing.JFrame {
 
     /**

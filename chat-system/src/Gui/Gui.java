@@ -16,62 +16,120 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 /**
- *
- * @author Tristan
+ *This class descripse all the possible signals that a user can send to the differents windows of the system. Thos windows will not be described.
+ * @author bardey and dauriac
  */
 public class Gui implements ActionListener, WindowListener, MouseListener {
-
 	private Controle c;
 	private Accueil a;
 	private Interface i;
 	private FileTransferDialog ft;
 
-	public Gui() {
+    /**
+     *Simple constructer of the classe.
+     */
+    public Gui() {
 	}
 
-	public void setControler(Controle c) {
+    /**
+     *The gui need to be related to your controler. Therefore you need to set the controler that the Gui is going to use.
+     * @param c Controler you are using.
+     */
+    public void setControler(Controle c) {
 		this.c = c;
 	}
 
-	public void commencer(){
-		a = new Accueil(this);
-	}
+    /**
+     *Displays the Welcome window of our application.
+     */
+    public void commencer(){
+	a = new Accueil(this);
+    }
 	
-	public void askAuthorizationFileTransfer(String nameFile,String from){
+    /**
+     * Displays a dialog box to know if the user wants to accepte the fille or not.
+     * @param nameFile Name of the file you want to transfer
+     * @param from Remote user that is sending the proposal
+     */
+    public void askAuthorizationFileTransfer(String nameFile,String from){
 		ft = new FileTransferDialog(nameFile, from, this);
 	
-	}
-	
-		
-	
-	public void addRemoteUser(String userName){
+    }	
+    /**
+     *Adds a New remote user in the Remote users list in the main window.
+     * @param userName Remote user name to be displayed. 
+     */
+    public void addRemoteUser(String userName){
 		i.addRemoteUser(userName);
-	}
-	public void displayNewMessage(String sender, String message){
+    }
+    /**
+     * Display the message you've  sent an other user in the main window.
+     * @param sender personne whom to you have sent the message.
+     * @param message Message
+     */
+    public void displayNewMessage(String sender, String message){
 		i.getConversationTextArea().append("Received from " + sender + " : " + message + "\n");
 	}
-	public void removeRemoteUser(String idiot){
+
+    /**
+     *Removes a user in the list of the users in the users list of the main window.
+     * @param userName User that will be removed from the liste
+     */
+    public void removeRemoteUser(String idiot){
 		i.removeRemoteUser(idiot);
 	}
-	public void messageSent(String message, String remoteUser){
+
+    /**
+     *  Display the message you've recieved an other user in the main window.
+     * @param message personne from whom you've received a message
+     * @param remoteUser Message
+     */
+    public void messageSent(String message, String remoteUser){
 		i.getConversationTextArea().append("Sent to " + remoteUser + " : " + message + "\n");
 		i.getMessageTextArea().setText("");
 		
 	}
-	public void filePropSent(String remoteU, String fileName){
-		i.getConversationTextArea().append("Sent file transfer proposal (" + fileName+ ") to : " + remoteU);
 
-	}
-	public void fileRefused(String remoteU, String fileName){
+    /**
+     *  Informes the user in the main window that you've sent a file proposal.
+     * @param remoteU remote user that has sent a file proposal to
+     * @param fileName file name of the proposal
+     */
+    public void filePropSent(String remoteU, String fileName){
+		i.getConversationTextArea().append("Sent file transfer proposal (" + fileName+ ") to : " + remoteU);
+    }
+    /**
+     * Informes the user in the main window that the file transfer has been refused.
+     * @param remoteU user that refused the file
+     * @param fileName name of the file that has been refused
+     */
+    public void fileRefused(String remoteU, String fileName){
 		i.getConversationTextArea().append(remoteU+" has REFUSED the transfere, "+ fileName);
 	}
-	public void fileAcceptedIsSending(String remoteU, String fileName){
+
+    /**
+     * Informes the user in the main window that the file transfer has been Accepted.
+     * @param remoteU user that accepted the file
+     * @param fileName name of the file that has been accepted
+     */
+    public void fileAcceptedIsSending(String remoteU, String fileName){
 		i.getConversationTextArea().append(remoteU+" has accepted the transfere, "+ fileName+" has been sent");
 	}
-	public void somethingWentRong(){
+
+    /**
+     * Informes the user in the main window that something went wrong. (for any reason)
+     */
+    public void somethingWentRong(){
 		i.getConversationTextArea().append("SOMETHING WHEN WRONG DURING THE TRANSFERE");
 	}
-	public void filleRecieved(String remoteU, String fileName, String where){
+
+    /**
+     *Informes the user in the main window that he has received a file.
+     * @param remoteU user that sent the file
+     * @param fileName name of the file that has been sent
+     * @param where folder where the file has been sent.
+     */
+    public void filleRecieved(String remoteU, String fileName, String where){
 		i.getConversationTextArea().append("You recieved a fille in : "+where+" from "+remoteU);
 	}
 		
