@@ -3,11 +3,11 @@
 
 =Related documentation :=
 =SRS =
-Please find the SRS here :  [https://docs.google.com/document/d/1cCKJBPt0DaD6DcAUHlxinMQLbz9TAZaBNUP38vLKZwA/edit?usp=sharing Google Code]
+Please find the SRS here :  [https://docs.google.com/document/d/1cCKJBPt0DaD6DcAUHlxinMQLbz9TAZaBNUP38vLKZwA/edit?usp=sharing Google Doc]
 =SDD =
-Please find the SDD here : [https://docs.google.com/document/d/1rB2c3fQ1txFLV-bcVd8mRxLgXiR1jRpStrWqrS1yKTc/edit?usp=sharing Google Code]
+Please find the SDD here : [https://docs.google.com/document/d/1rB2c3fQ1txFLV-bcVd8mRxLgXiR1jRpStrWqrS1yKTc/edit?usp=sharing Google Doc]
 =PSM =
-Please find the PSM here : 
+Please find the PSM here : [https://drive.google.com/file/d/0B0dMsDfkZIuvNHc2dUtmMmx3TUE/view?usp=sharing Image on Google Drive]
 =Java Doc=
 Please find the Java doc here : 
 
