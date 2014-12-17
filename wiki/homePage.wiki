@@ -3,9 +3,9 @@
 
 =Related documentation :=
 =SRS =
-Please find the SRS here : 
+Please find the SRS here :  [https://docs.google.com/document/d/1cCKJBPt0DaD6DcAUHlxinMQLbz9TAZaBNUP38vLKZwA/edit?usp=sharing Google Code]
 =SDD =
-Please find the SDD here : 
+Please find the SDD here : [https://docs.google.com/document/d/1rB2c3fQ1txFLV-bcVd8mRxLgXiR1jRpStrWqrS1yKTc/edit?usp=sharing Google Code]
 =PSM =
 Please find the PSM here : 
 =Java Doc=
@@ -14,5 +14,3 @@ Please find the Java doc here :
 
 =Notes: =
 To use this app please launch it, enter your UserName. Ones conected, select a Remote User, send a message or a file. Enjoy. 
-
-
