@@ -5,7 +5,7 @@
 package Model;
 
 /**
- *Decribse your self in to the system.
+ *Decribes yourself into the system.
  * @author bardey
  */
 public class Me {
@@ -13,34 +13,34 @@ public class Me {
 	private String userName;
 	private String userNameWithIP;
 	/**
-         * Simple constructeur of the class;
+         * Simple constructor of the class;
          */
 	public Me (){
 		
 	}
         /**
-         * Stors your user name with your IP adresse in this format "user@333.333.333.333".
+         * Stores your username with your IP address in this format "user@333.333.333.333".
          * @param u 
          */
 	public void setUserNameWithIP(String u){
 		this.userNameWithIP = u;
 	}
 	/**
-         * Stors your user name.
+         * Stores your username.
          * @param u 
          */
 	public void setUserName(String u){
 		this.userName = u;
 	}
 	/**
-         * Find your user name with your IP adresse in this format "user@333.333.333.333".
+         * Finds your username with your IP address in this format "user@333.333.333.333".
          * @return 
          */
 	public String getUserNameWithIP(){
 		return this.userNameWithIP;
 	}
         /**
-         * Find your User Name.
+         * Finds your username.
          * @return 
          */
 	public String getUserName(){

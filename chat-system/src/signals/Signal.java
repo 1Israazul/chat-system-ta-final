@@ -18,8 +18,18 @@ import java.io.Serializable;
  */
 public abstract class Signal implements Serializable {
     
+    /**
+     *
+     */
     public final static int MAX_SIZE = 1024;
     
+    /**
+     *
+     * @param signal
+     * @return
+     * @throws SignalTooBigException
+     * @throws IOException
+     */
     public static byte[] toByteArray(Signal signal) throws SignalTooBigException, IOException {
 
         byte[] result = new byte[MAX_SIZE];
@@ -36,6 +46,13 @@ public abstract class Signal implements Serializable {
         return result;
     }
 
+    /**
+     *
+     * @param data
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static Signal fromByteArray(byte[] data) throws IOException, ClassNotFoundException {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         ObjectInputStream ois = new ObjectInputStream(bais);

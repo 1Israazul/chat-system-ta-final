@@ -24,7 +24,7 @@ public class ChatSystem {
 
 
     /**
-     * Public static void main methode (Here starts the fireworcks, enjoy)
+     * Public static void main method (Here starts the fireworks, enjoy)
      *
      * @param args the command line arguments
      */
@@ -48,13 +48,13 @@ public class ChatSystem {
         }
 
     }
-    //is sury not used, never.
+    //is surely not used, never.
     public Controle getControler() {
         return this.controle;
     }
 
     
-//debug method does not concern any one
+//debug method that does not concern any one
     public static void samuserAvecLeSystem() {
         //on envoi un hello
         boolean continuer = true;

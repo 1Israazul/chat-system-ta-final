@@ -264,7 +264,7 @@ public class Interface extends javax.swing.JFrame {
 	}
 
 	/**
-	 * @param remoteTextField the remoteTextField to set
+	 * @param s the text to set
 	 */
 	public void setRemoteTextField(String s) {
 		this.remoteTextField.setText(s);

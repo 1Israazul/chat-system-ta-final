@@ -8,20 +8,20 @@ import java.net.InetAddress;
 import java.util.*;
 
 /**
- *The remotes users are stored here in a HashMap. You can access the need informations with the preseted messages.
+ *The remote users are stored here in a HashMap. You can access the needed informations with the presetted messages.
  * @author bardey
  */
 public class RemoteUsers {
 	
 	private HashMap <String , InetAddress> others;
 	/**
-         * Constructeur of the class, intenciats a empty HashMap
+         * Constructor of the class, instantiates an empty HashMap.
          */
 	public RemoteUsers(){
 		others = new HashMap<String, InetAddress>();
 	}
 	/**
-         * Adds a User in the Registory.
+         * Adds a User in the Registry.
          * @param uN
          * @param addr 
          */
@@ -30,15 +30,15 @@ public class RemoteUsers {
 		//System.out.println(this.others.toString());;
 	}
 	/**
-         * InnetAdress a RemoteUser
-         * @param UserName
-         * @return InnetAdresse of the Remote User
+         * InetAddress a RemoteUser
+         * @param Un
+         * @return InetAddress of the Remote User.
          */
 	public InetAddress getRemoteUserAdress(String Un){
 		return this.others.get(Un);		
 	}
 	/**
-         * Used in testing and debug to get a remote user adresse randomly in the registory.
+         * Used in testing and debugging to get a remote user address randomly in the registry.
          * @return 
          */
 	public String getRemoteUserAdressRand(){
@@ -48,14 +48,14 @@ public class RemoteUsers {
 		return randomValue;
 	}
 	/**
-         * Deletes a Remote User in the registory.
+         * Deletes a Remote User in the registry.
          * @param idiot 
          */
 	public void killRemoteUser(String idiot){
 		this.others.remove(idiot);
 	}
 	/**
-         * Debug function to inspecte the Registory.
+         * Debug function to inspect the Registry.
          * @return 
          */
 	public String toString(){

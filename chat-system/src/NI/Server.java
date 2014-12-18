@@ -12,7 +12,7 @@ import chat.system.*;
 import javax.sound.midi.Soundbank;
 
 /**
- * UDP listener that notifys our system when a message is received.
+ * UDP listener that notifies our system when a message is received.
  * @author bardey and dauriac
  */
 public class Server extends Thread {
@@ -22,7 +22,7 @@ public class Server extends Thread {
 	private boolean canGo = true;
 	
     /**
-     *Constructeur, sets up every needed items
+     *Constructor, sets up every needed items
      * @param sock socket, managed by the NI
      * @param lengthMax my lenght of the packet received
      * @param nI link to the NI
@@ -34,7 +34,7 @@ public class Server extends Thread {
 	}
 	
     /**
-     *Start the server to listen and notify our system
+     *Starts the server to listen and notify our system.
      */
     public void run(){
 		InetAddress from; 

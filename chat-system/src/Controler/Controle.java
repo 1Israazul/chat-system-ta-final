@@ -30,12 +30,12 @@ public class Controle {
 
 	//public String username;
     /**
-     * Constructeur of the classe. You must relate the controler to the a
-     * network interface, a Gui and a Model (here the other users)
+     * Constructor of the class. You must relate the controler to a
+     * network interface, a GUI and a Model (here the other users).
      *
      * @param nI network interface
-     * @param o others useres of the system
-     * @param g Gui of the system
+     * @param o others users of the system
+     * @param g GUI of the system
      */
     public Controle(MyNetworkInterface nI, RemoteUsers o, Gui g) {
         this.nI = nI;
@@ -67,7 +67,7 @@ public class Controle {
     }
 
     /**
-     * Disconects you from the system.
+     * Disconnects you from the system.
      */
     public void disconnect() {
         sendBye();
@@ -80,16 +80,16 @@ public class Controle {
     private void addNewRemotUser(String userName, InetAddress from) {
 
         others.addRemoteUser(userName, from);
-        System.out.println("**** " + userName + " is added to the list of users at the adresse " + from);
+        System.out.println("**** " + userName + " is added to the list of users at the address " + from);
         if (gui != null) {
             gui.addRemoteUser(userName);
         }
     }
 
     /**
-     * Performs all the necesary actions when a Hello Signal is recieved.
-     * @param hy Signal (to be treated)
-     * @param from InetAdress from whom the message has been receibed
+     * Performs all the necessary actions when a Hello Signal is received.
+     * @param hy Signal (to be treated).
+     * @param from InetAddress from whom the message has been received.
      */
     public void helloReceived(Signal hy, InetAddress from) {
         String userName = ((Hello) hy).getUsername();
@@ -108,8 +108,8 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when a TextMessage Signal is recieved.
-     * @param hy Signal (to be treated)
+     *Performs all the necessary actions when a TextMessage Signal is received.
+     * @param hy Signal (to be treated).
      */
     public void texteMessageReceived(Signal hy) {
         String sender = ((TextMessage) hy).getFrom();
@@ -119,8 +119,8 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when a Bye Signal is recieved.
-     * @param bye Signal (to be treated)
+     *Performs all the necessary actions when a Bye Signal is received.
+     * @param bye Signal (to be treated).
      */
     public void byeReceived(Signal bye) {
         String idiot = ((Goodbye) bye).getUsername();
@@ -132,9 +132,9 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when a HelloOK Signal is recieved.
+     *Performs all the necessary actions when a HelloOK Signal is received.
      * @param hy Signal (to be treated)
-     * @param from InetAdress from whom the message has been receibed
+     * @param from InetAddress from whom the message has been received.
      */
     public void helloOKReceived(Signal hy, InetAddress from) {
         String userName = ((HelloOK) hy).getUsername();
@@ -143,9 +143,9 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when you want to send a message.
-     * @param message Message to be sent
-     * @param remoteUser user to whom the message will be sent
+     *Performs all the necessary actions when you want to send a message.
+     * @param message Message to be sent.
+     * @param remoteUser user to whom the message will be sent.
      */
     public void sendMessage(String message, String remoteUser) {
         InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
@@ -157,9 +157,9 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when you want to send a Fille.
-     * @param file Fille to be sent
-     * @param remoteUser user to whom the message will be sent
+     *Performs all the necessary actions when you want to send a File.
+     * @param file File to be sent.
+     * @param remoteUser user to whom the message will be sent.
      */
     public void sendFileProp(File file, String remoteUser) {
         //verifier que tout est bon dans la demande.
@@ -176,8 +176,8 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when a FilePorposal Signal is recieved.
-     * @param fp File proposal signal to be interterpreted
+     *Performs all the necessary actions when a FileProposal Signal is received.
+     * @param fp File proposal signal to be interpreted.
      */
     public void fileProposalReceived(Signal fp) {
         String nameFile = ((FileProposal) fp).getFileName();
@@ -199,12 +199,12 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when you accepte to receive a file. (could be inprouved : no parametres needed)
-     * @param fileName fille name to be received
-     * @param remoteUser remote user to send the signal
+     *Performs all the necessary actions when you accept to receive a file. (could be improved : no parameters needed)
+     * @param file file name to be received.
+     * @param remoteUser remote user to send the signal.
      */
     public void sendFileOK(String file, String remoteUser) {
-        //InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
+        //InetAddress remoteAddr = others.getRemoteUserAddress(remoteUser);
 
         try {
 
@@ -224,9 +224,9 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when you refused to receive a file. (could be inprouved : no parametres needed)
-     * @param fileName fille name to be received
-     * @param remoteUser remote user to send the signal
+     *Performs all the necessary actions when you refuse to receive a file. (could be improved : no parametres needed)
+     * @param file file name to be received.
+     * @param remoteUser remote user to send the signal.
      */
     public void sendFileNOK(String file, String remoteUser) {
         //InetAddress remoteAddr = others.getRemoteUserAdress(remoteUser);
@@ -243,9 +243,9 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when you receuve a FileOk signal. 
-     * @param signal signal 
-     * @param remoteUser remote user whom send the signal
+     *Performs all the necessary actions when you receive a FileAccepted signal. 
+     * @param s signal 
+     * @param from remote user to whom send the signal.
      */
     public void fileOKReceived(Signal s, InetAddress from) {
         try {
@@ -274,9 +274,9 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when you receuve a FileNOTOk signal. 
-     * @param signal signal 
-     * @param remoteUser remote user whom send the signal
+     *Performs all the necessary actions when you receive a FileNotAccepted signal. 
+     * @param s signal 
+     * @param from remote user to whom send the signal.
      */
     public void fileNOKReceived(Signal s, InetAddress from) {
         //on kill la demande
@@ -292,9 +292,9 @@ public class Controle {
     }
 
     /**
-     *Performs all the necesary actions when you receuve a Received a file (from the TCP server).
-     * @param size Size of received file
-     * @param file Bytes of the received file
+     *Performs all the necessary actions when you receive a file (from the TCP server).
+     * @param taille Size of received file.
+     * @param file Bytes of the received file.
      */
     public void fileTransferReceived(long taille, byte[] file) {
         //byte[] file = new byte[(int)taille];
@@ -321,7 +321,7 @@ public class Controle {
     }
 
     /**
-     *Sends a GoodBye signal on the network
+     *Sends a GoodBye signal on the network.
      */
     public void sendBye() {
         nI.sendBy(me.getUserName());
