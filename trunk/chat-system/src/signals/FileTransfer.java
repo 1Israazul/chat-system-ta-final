@@ -1,18 +1,34 @@
 package signals;
 
+/**
+ *
+ * @author Alexandre
+ */
 public class FileTransfer extends Signal {
         private byte[] file;
 
-	public FileTransfer(byte [] file) {
+    /**
+     *
+     * @param file
+     */
+    public FileTransfer(byte [] file) {
 		super();
 		this.file = file;
 	}
 
-	public byte[] getFile() {
+    /**
+     *
+     * @return
+     */
+    public byte[] getFile() {
 		return file;
 	}
 
-	public void setFile(byte[] file) {
+    /**
+     *
+     * @param file
+     */
+    public void setFile(byte[] file) {
 		this.file = file;
 	}
 }

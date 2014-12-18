@@ -8,7 +8,7 @@ import java.io.*;
 
 
 /**
- *When a fille transfere resquest is been treted this classe helps you keep track of the stat of this request.This can be user ethear for files to be sent and to be recieved (will not precise it each time, we take into account that you understand that you can use it in anyways).
+ *When a file transfer resquest has been treated this class helps you keep track of the state of this request.This can be used either for files to be sent or to be recieved (will not precise it each time, we take into account that you understand that you can use it in any way).
  * @author bardey and dauriac
  */
 public class demandeFileTrans {
@@ -20,7 +20,7 @@ public class demandeFileTrans {
 	String fileName;
 	
 	/**
-         * Simple constructer.
+         * Simple constructor.
          */
 	public demandeFileTrans(){
 		
@@ -45,21 +45,21 @@ public class demandeFileTrans {
 		isUsed = false;
 	}
         /**
-         * Get the name of the fille that is curently been transfered.
+         * Get the name of the file that is currently transferred.
          * @return name of the file
          */
 	public String getFileName(){
 		return this.fileName;
 	}
         /**
-         * Set the name of the fille that is going to be transfered.
+         * Set the name of the file that is going to be transferred.
          * @param name 
          */
 	public void setFileName(String name){
 		this.fileName = name;
 	}
         /**
-         * Get the name of the remote User to whom the is curently been transfered.
+         * Get the name of the remote User to whom the file is currently transferred.
          * @return remote user
          */
 	public String getRemotUser(){
@@ -73,29 +73,29 @@ public class demandeFileTrans {
 		this.remoteUser = user;
 	}
         /**
-         * Get the fille that is going to be transfered.
-         * @return file that is been sent
+         * Get the file that is going to be transferred.
+         * @return file that has been sent
          */
 	public File getFile(){
 		return this.filetoSend;
 	}
         /**
-         * Set the fille that is going to be transfered.
-         * @param File that is been sent
+         * Set the file that is going to be transfered.
+         * @param theFile that has been sent
          */
 	public void setFile(File theFile){
 		this.filetoSend = theFile;
 		this.fileName = theFile.getName();
 	}
         /**
-         * Get the size of the fille that is going to be transfered.
-         * @return size of the fille to be sent
+         * Get the size of the file that is going to be transferred.
+         * @return size of the file to be sent.
          */
 	public long gettaille(){
 		return this.taille;
 	}
         /**
-         * Set the size of the fille that is going to be transfered.
+         * Set the size of the file that is going to be transferred.
          * @param taille size of the file
          */
 	public void settaille(long taille){

@@ -11,6 +11,10 @@ package signals;
  */
 public class SignalTooBigException extends Exception {
 
+    /**
+     *
+     * @param signal_too_big
+     */
     public SignalTooBigException(String signal_too_big) {
         super(signal_too_big);
     }

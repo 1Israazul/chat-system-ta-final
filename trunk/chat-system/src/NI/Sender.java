@@ -7,14 +7,14 @@ package NI;
 import java.net.*;
 
 /**
- *Sender of our signal over a UDP transport protocole
+ *Sender of our signal over a UDP transport protocol
  * @author bardey
  */
 public class Sender {
 		private DatagramSocket sock;
 
     /**
-     *Simple constructer
+     *Simple constructor
      * @param s socket to use
      * @throws SocketException
      */

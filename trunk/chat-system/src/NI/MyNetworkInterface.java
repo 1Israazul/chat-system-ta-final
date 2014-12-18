@@ -15,8 +15,8 @@ import NI.FileNotSentEX;
  * and open the template in the editor.
  */
 /**
- * This class implements all the necessari signals and message needed to
- * interfer with the local network. You can performe a connection, send a
+ * This class implements all the necessary signals and messages needed to
+ * interact with the local network. You can performe a connection, send a
  * message, a file...
  *
  * @author Bardey and Dauriac
@@ -36,13 +36,13 @@ public class MyNetworkInterface {
     private byte[] filebytes;
 
     /**
-     * Constructeur of the class no need of any parameters
+     * Constructor of the class no need of any parameter.
      */
     public MyNetworkInterface() {
     }
 
     /**
-     * This is a crusual function, it will initialize all socket.
+     * This is a crucial function, it will initialize all the sockets.
      */
     public void creatServers() {
         try {
@@ -65,7 +65,7 @@ public class MyNetworkInterface {
     }
 
     /**
-     * Send back a string representation of the ip adresse you are using.
+     * Sends back a string representation of the ip address you are using.
      *
      * @return Your IP address
      */
@@ -74,8 +74,8 @@ public class MyNetworkInterface {
     }
 
     /**
-     * Your network interface needs to be related to your contoler. This
-     * fucntion creates the link.
+     * Your network interface needs to be related to your controler. This
+     * function creates the link.
      *
      * @param c (controler)
      */
@@ -84,7 +84,7 @@ public class MyNetworkInterface {
     }
 
     /**
-     * Creats the UDPserveur that will receive all th esent signals.
+     * Creates the UDPserver that will receive all the sent signals.
      */
     private void createUDPServer() {
         serve = new Server(sock, lengthOfdataRcv, this);
@@ -105,9 +105,9 @@ public class MyNetworkInterface {
     }
 
     /**
-     * Stars the TCP server that will receives the sent fille.
+     * Stars the TCP server that will receive the sent files.
      *
-     * @param size Size of the file you want to receive
+     * @param taille Size of the file you want to receive
      */
     public void lancerFileReceiver(int taille) {
         serv = new TCPServer(port, taille, this);
@@ -117,8 +117,8 @@ public class MyNetworkInterface {
     }
 
     /**
-     * When you TCP has receive the fille it will call this function to send the
-     * data back to the contoler.
+     * When your TCP has received the file it will call this function to send the
+     * data back to the controler.
      *
      * @param data bytes of the file you want to send
      */
@@ -134,8 +134,8 @@ public class MyNetworkInterface {
     }
 
     /**
-     * This function is essential. It creats all the necessary ittems you need
-     * send the
+     * This function is essential. It creates all the necessary items you need to
+     * send.
      */
     private void createUDPSender() {
         try {
@@ -166,7 +166,7 @@ public class MyNetworkInterface {
     /**
      * Sends the Hello signal on the network.
      *
-     * @param myUserName Your very own user name (respecting the convention)
+     * @param uN Your very own user name (respecting the convention)
      */
     public void sendHello(String uN) {
         try {
@@ -183,9 +183,9 @@ public class MyNetworkInterface {
 
     /**
      * Sends the HelloOk Signal to a specific remote user.You need to inform the
-     * function of you user name and the destiniation IP adresse.
+     * function of you username and of the destination IP address.
      *
-     * @param myUserName Your very own user name (respecting the convention)
+     * @param uN Your very own user name (respecting the convention)
      * @param remoteAddr adress of the remote user you will send this to
      */
     public void sendHelloOK(String uN, InetAddress remoteAddr) {
@@ -219,9 +219,9 @@ public class MyNetworkInterface {
     }
 
     /**
-     * Sends a FilleProposal signal to a specific remote user.
+     * Sends a FileProposal signal to a specific remote user.
      *
-     * @param demande class conteining all the needed informations
+     * @param demande class containing all the needed informations
      * @param me Your very own user name (respecting the convention)
      * @param to adress of the remote user you will send this to
      */
@@ -240,7 +240,7 @@ public class MyNetworkInterface {
     /**
      * Sends a fileTransferAccepted signal to a specific remote user.
      *
-     * @param nameFile file name your accepted
+     * @param file file name of the file you accepted
      * @param me Your very own user name (respecting the convention)
      * @param to adress of the remote user you will send this to
      */
@@ -257,7 +257,7 @@ public class MyNetworkInterface {
     /**
      * Sends a FileTransferNotAccepted signal to a specific remote user.
      *
-     * @param nameFile file name your refused
+     * @param file file name of the file you refused
      * @param remoteUserName adress of the remote user you will send this to
      * @param to adress of the remote user you will send this to
      */
@@ -310,10 +310,10 @@ public class MyNetworkInterface {
     }
 
     /**
-     * Informes the controler that a Hello signal has been received.
+     * Informs the controler that a Hello signal has been received.
      *
      * @param res signal you received
-     * @param from from whom you received the signam
+     * @param from from whom you received the signal
      */
     public void helloReceived(Signal res, InetAddress from) {
         c.helloReceived(res, from);
@@ -321,10 +321,10 @@ public class MyNetworkInterface {
     }
 
     /**
-     * Informes the controler that a HelloOK signal has been received.
+     * Informs the controler that a HelloOK signal has been received.
      *
      * @param res signal you received
-     * @param from from whom you received the signam
+     * @param from from whom you received the signal
      */
     public void helloOKReceived(Signal res, InetAddress from) {
         c.helloOKReceived(res, from);
@@ -332,45 +332,45 @@ public class MyNetworkInterface {
     }
 
     /**
-     * Informes the controler that a TextMessage signal has been received.
+     * Informs the controler that a TextMessage signal has been received.
      *
-     * @param res res signal you received
+     * @param res signal you received
      */
     public void messageReceived(Signal res) {
         c.texteMessageReceived(res);
     }
 
     /**
-     * Informes the controler that a GoodBye signal has been received.
+     * Informs the controler that a GoodBye signal has been received.
      *
-     * @param res res signal you received
+     * @param res signal you received
      */
     public void byeReceived(Signal res) {
         c.byeReceived(res);
     }
 
     /**
-     * Informes the controler that a FileProposal signal has been received.
+     * Informs the controler that a FileProposal signal has been received.
      *
-     * @param res res signal you received
+     * @param res signal you received
      */
     public void fileProposalReceived(Signal res) {
         c.fileProposalReceived(res);
     }
 
     /**
-     * Informes the controler that a TransferAcceptedReceived signal has been
+     * Informs the controler that a TransferAcceptedReceived signal has been
      * received.
      *
      * @param res signal you received
-     * @param from from whom you received the signam
+     * @param from from whom you received the signal
      */
     public void fileTransferAcceptedReceived(Signal res, InetAddress from) {
         c.fileOKReceived(res, from);
     }
 
     /**
-     * Informes the controler that a FileTransferNotAccepted signal has been
+     * Informs the controler that a FileTransferNotAccepted signal has been
      * received.
      *
      * @param res signal you received
@@ -380,7 +380,7 @@ public class MyNetworkInterface {
         c.fileNOKReceived(res, from);
     }
 
-    //this function does not concern anyone, is use ones and that's it we are not proud of it 
+    //this function does not concern anyone, is used once and that's it we are not proud of it 
     private void getIpOfInterfac(String inter) throws UnknownHostException {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {

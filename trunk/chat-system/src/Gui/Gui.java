@@ -16,7 +16,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 /**
- *This class descripse all the possible signals that a user can send to the differents windows of the system. Thos windows will not be described.
+ *This class describes all the possible signals that a user can send to the different windows of the system. Those windows will not be described.
  * @author bardey and dauriac
  */
 public class Gui implements ActionListener, WindowListener, MouseListener {
@@ -32,7 +32,7 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 	}
 
     /**
-     *The gui need to be related to your controler. Therefore you need to set the controler that the Gui is going to use.
+     *The gui needs to be related to your controler. Therefore you need to set the controler that the Gui is going to use.
      * @param c Controler you are using.
      */
     public void setControler(Controle c) {
@@ -47,7 +47,7 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
     }
 	
     /**
-     * Displays a dialog box to know if the user wants to accepte the fille or not.
+     * Displays a dialog box to know if the user wants to accepte the file or not.
      * @param nameFile Name of the file you want to transfer
      * @param from Remote user that is sending the proposal
      */
@@ -63,7 +63,7 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 		i.addRemoteUser(userName);
     }
     /**
-     * Display the message you've  sent an other user in the main window.
+     * Display the message you've  sent to an other user in the main window.
      * @param sender personne whom to you have sent the message.
      * @param message Message
      */
@@ -72,15 +72,15 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 	}
 
     /**
-     *Removes a user in the list of the users in the users list of the main window.
-     * @param userName User that will be removed from the liste
+     *Removes a user from the users list of the main window.
+     * @param userName User that will be removed from the list
      */
-    public void removeRemoteUser(String idiot){
-		i.removeRemoteUser(idiot);
+    public void removeRemoteUser(String userName){
+		i.removeRemoteUser(userName);
 	}
 
     /**
-     *  Display the message you've recieved an other user in the main window.
+     *  Displays the message you've received from an other user in the main window.
      * @param message personne from whom you've received a message
      * @param remoteUser Message
      */
@@ -91,7 +91,7 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 	}
 
     /**
-     *  Informes the user in the main window that you've sent a file proposal.
+     *  Informs the user in the main window that he has sent a file proposal.
      * @param remoteU remote user that has sent a file proposal to
      * @param fileName file name of the proposal
      */
@@ -99,7 +99,7 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 		i.getConversationTextArea().append("Sent file transfer proposal (" + fileName+ ") to : " + remoteU);
     }
     /**
-     * Informes the user in the main window that the file transfer has been refused.
+     * Informs the user in the main window that the file transfer has been refused.
      * @param remoteU user that refused the file
      * @param fileName name of the file that has been refused
      */
@@ -108,7 +108,7 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 	}
 
     /**
-     * Informes the user in the main window that the file transfer has been Accepted.
+     * Informs the user in the main window that the file transfer has been Accepted.
      * @param remoteU user that accepted the file
      * @param fileName name of the file that has been accepted
      */
@@ -117,14 +117,14 @@ public class Gui implements ActionListener, WindowListener, MouseListener {
 	}
 
     /**
-     * Informes the user in the main window that something went wrong. (for any reason)
+     * Informs the user in the main window that something went wrong. (for any reason)
      */
     public void somethingWentRong(){
 		i.getConversationTextArea().append("SOMETHING WHEN WRONG DURING THE TRANSFERE");
 	}
 
     /**
-     *Informes the user in the main window that he has received a file.
+     *Informs the user in the main window that he has received a file.
      * @param remoteU user that sent the file
      * @param fileName name of the file that has been sent
      * @param where folder where the file has been sent.

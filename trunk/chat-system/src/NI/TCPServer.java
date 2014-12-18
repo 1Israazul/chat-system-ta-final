@@ -7,7 +7,7 @@ import java.net.*;
 import java.io.*;
 
 /**
- *TCP server used to received files
+ *TCP server used to receive files
  * @author bardey and dauriac
  */
 public class TCPServer extends Thread {
@@ -18,10 +18,10 @@ public class TCPServer extends Thread {
 		MyNetworkInterface nI;
 
     /**
-     *Simple constructeur use to initialise some variables 
-     * @param port on to wait for a file
+     *Simple constructor used to initialize some variables 
+     * @param port port where we will wait for a file
      * @param taille size of the file to be expected
-     * @param pere linl to the NetWork management interface
+     * @param pere link to the NetWork management interface
      */
     public TCPServer(int port, int taille, MyNetworkInterface pere){
 		 this.taille = taille; 
