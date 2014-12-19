@@ -16,6 +16,7 @@ Or if you prefer to download it : [https://drive.google.com/folderview?id=0B1sNG
 
 =Notes: =
 To use this app please launch it, enter your UserName. Once connected, select a Remote User, send a message or a file. Enjoy. 
+Be aware that all tests have been performed on INSA DGEI computers, booting on Ubuntu. 
 
 =Important=
 This code compiles with JDK 1.7. If you want a .jar just Ask us :).
